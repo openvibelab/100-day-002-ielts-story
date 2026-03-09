@@ -1,0 +1,80 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { Volume2, Square } from "lucide-react";
+
+interface SpeakButtonProps {
+  text: string;
+  className?: string;
+  size?: "sm" | "md";
+}
+
+export function SpeakButton({ text, className = "", size = "sm" }: SpeakButtonProps) {
+  const [speaking, setSpeaking] = useState(false);
+  const [supported, setSupported] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  useEffect(() => {
+    setSupported(typeof window !== "undefined" && "speechSynthesis" in window);
+  }, []);
+
+  useEffect(() => {
+    // Cleanup on unmount
+    return () => {
+      if (speaking) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [speaking]);
+
+  function handleSpeak() {
+    if (!supported) return;
+
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+
+    // Try to find a good English voice
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice = voices.find(
+      (v) => v.lang.startsWith("en") && v.name.includes("Female")
+    ) || voices.find(
+      (v) => v.lang.startsWith("en-")
+    );
+    if (englishVoice) utterance.voice = englishVoice;
+
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+
+    utteranceRef.current = utterance;
+    setSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  if (!supported) return null;
+
+  const iconSize = size === "sm" ? 12 : 14;
+
+  return (
+    <button
+      onClick={handleSpeak}
+      className={`inline-flex items-center gap-1.5 rounded-lg border transition-all ${
+        speaking
+          ? "border-neon-blue/50 bg-neon-blue/10 text-neon-blue"
+          : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+      } ${size === "sm" ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-xs"} ${className}`}
+      aria-label={speaking ? "Stop speaking" : "Read aloud"}
+      title={speaking ? "Stop" : "Read aloud (TTS)"}
+    >
+      {speaking ? <Square size={iconSize} /> : <Volume2 size={iconSize} />}
+      {speaking ? "Stop" : "Listen"}
+    </button>
+  );
+}

@@ -189,6 +189,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    // Server-side input validation
+    if (typeof story !== "string" || story.length > 5000) {
+      return NextResponse.json({ error: "Story too long (max 5000 chars)" }, { status: 400 });
+    }
+
     const userPrompt = buildUserPrompt(story, topic, cue_card);
 
     // If user provides their own key, use ONLY that provider

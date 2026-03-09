@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BookOpen, Brain, Network, Sparkles } from "lucide-react";
+import { BookOpen, Brain, Network, Sparkles, Layers, FileText } from "lucide-react";
+import { ProgressSummary } from "@/components/ProgressSummary";
 
 export default function Home() {
   return (
@@ -23,12 +24,15 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mx-auto mt-8 grid max-w-4xl gap-5 md:grid-cols-2 lg:grid-cols-4">
+      {/* Progress summary (N-1) */}
+      <ProgressSummary />
+
+      <div className="mx-auto mt-8 grid max-w-5xl gap-5 md:grid-cols-2 lg:grid-cols-3">
         {[
           {
             icon: BookOpen,
             title: "Write Stories",
-            desc: "Input your real personal stories — a trip, a friend, a meaningful object.",
+            desc: "Input 6-10 detailed personal stories — a trip, a friend, a meaningful object.",
             href: "/stories",
           },
           {
@@ -44,10 +48,22 @@ export default function Home() {
             href: "/adapt",
           },
           {
+            icon: Layers,
+            title: "Batch Adapt",
+            desc: "Select a story, check multiple topics, one-click batch generate your entire corpus.",
+            href: "/batch",
+          },
+          {
             icon: Network,
             title: "Mind Map",
             desc: "Visualize which stories cover which topics. Find gaps at a glance.",
             href: "/mind-map",
+          },
+          {
+            icon: FileText,
+            title: "Corpus",
+            desc: "Review all adaptations, export as text, backup as JSON, or print for offline practice.",
+            href: "/corpus",
           },
         ].map((item) => (
           <Link key={item.href} href={item.href} className="card-hover group">

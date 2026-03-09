@@ -4,19 +4,23 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2, Edit3, Save, X } from "lucide-react";
 import { CoreStory, StoryCategory, CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
 import { getStories, saveStory, updateStory, deleteStory, getAdaptedCountByStory } from "@/lib/store";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 const CATEGORIES: StoryCategory[] = ["person", "event", "object", "place"];
 
 export default function StoriesPage() {
   const [stories, setStories] = useState<CoreStory[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<StoryCategory>("event");
   const [content, setContent] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string; adaptedCount: number } | null>(null);
 
   useEffect(() => {
     setStories(getStories());
+    setLoading(false);
   }, []);
 
   function handleSave() {
@@ -41,9 +45,16 @@ export default function StoriesPage() {
     setShowForm(true);
   }
 
-  function handleDelete(id: string) {
-    deleteStory(id);
+  function handleDeleteClick(story: CoreStory) {
+    const adaptedCount = getAdaptedCountByStory(story.id);
+    setDeleteTarget({ id: story.id, title: story.title, adaptedCount });
+  }
+
+  function handleDeleteConfirm() {
+    if (!deleteTarget) return;
+    deleteStory(deleteTarget.id);
     setStories(getStories());
+    setDeleteTarget(null);
   }
 
   function resetForm() {
@@ -54,13 +65,29 @@ export default function StoriesPage() {
     setEditingId(null);
   }
 
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+  const isShort = content.trim().length > 0 && wordCount < 80;
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="skeleton h-8 w-48" />
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {[1, 2].map((i) => (
+            <div key={i} className="skeleton h-32 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-100">My Core Stories</h1>
           <p className="mt-2 text-sm text-gray-500">
-            Write your real experiences. These will be adapted to fit different IELTS topics.
+            Write 6-10 detailed personal stories. The more specific, the better AI can adapt them.
           </p>
         </div>
         <button className="btn-neon" onClick={() => { resetForm(); setShowForm(true); }}>
@@ -75,16 +102,22 @@ export default function StoriesPage() {
             {editingId ? "Edit Story" : "New Core Story"}
           </h3>
 
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Give your story a short title (e.g. 'Trip to Beijing')"
-            className="input-dark mt-4"
-            maxLength={100}
-          />
+          <div className="mt-4">
+            <label htmlFor="story-title" className="mb-1.5 block text-xs font-medium text-gray-400">
+              Title
+            </label>
+            <input
+              id="story-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. 'Trip to Beijing'"
+              className="input-dark"
+              maxLength={100}
+            />
+          </div>
 
           <div className="mt-4">
-            <p className="mb-2 text-xs text-gray-500">Category</p>
+            <label className="mb-1.5 block text-xs font-medium text-gray-400">Category</label>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => (
                 <button
@@ -102,14 +135,30 @@ export default function StoriesPage() {
             </div>
           </div>
 
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Write your story in detail. Include who was involved, what happened, how you felt, and why it matters to you. The more detail, the better AI can adapt it."
-            className="textarea-dark mt-4 min-h-[200px]"
-            maxLength={3000}
-          />
-          <div className="mt-1 text-right text-xs text-gray-600">{content.length}/3000</div>
+          <div className="mt-4">
+            <label htmlFor="story-content" className="mb-1.5 block text-xs font-medium text-gray-400">
+              Your Story
+            </label>
+            <p className="mb-2 text-xs text-gray-600">
+              Include: who was involved, what happened, how you felt, and why it matters. Aim for 150-400 words.
+            </p>
+            <textarea
+              id="story-content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Write your story in detail..."
+              className="textarea-dark mt-1 min-h-[200px]"
+              maxLength={3000}
+            />
+            <div className="mt-1 flex justify-between text-xs">
+              {isShort ? (
+                <span className="text-amber-400">Story seems short ({wordCount} words). Try adding more detail for better AI adaptations.</span>
+              ) : (
+                <span className="text-gray-600">{wordCount} words</span>
+              )}
+              <span className="text-gray-600">{content.length}/3000</span>
+            </div>
+          </div>
 
           <div className="mt-4 flex gap-3">
             <button className="btn-neon-solid" onClick={handleSave} disabled={!title.trim() || !content.trim()}>
@@ -156,12 +205,14 @@ export default function StoriesPage() {
                     <button
                       onClick={() => handleEdit(story)}
                       className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-dark-surface hover:text-gray-300"
+                      aria-label={`Edit story: ${story.title}`}
                     >
                       <Edit3 size={14} />
                     </button>
                     <button
-                      onClick={() => handleDelete(story.id)}
+                      onClick={() => handleDeleteClick(story)}
                       className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                      aria-label={`Delete story: ${story.title}`}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -172,6 +223,22 @@ export default function StoriesPage() {
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete Story"
+        message={
+          deleteTarget
+            ? deleteTarget.adaptedCount > 0
+              ? `Delete "${deleteTarget.title}" and its ${deleteTarget.adaptedCount} adapted responses? This cannot be undone.`
+              : `Delete "${deleteTarget.title}"? This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        danger
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

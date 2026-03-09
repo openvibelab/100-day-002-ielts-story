@@ -2,52 +2,37 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Sparkles, Copy, Check, Loader2, Settings, KeyRound, Trash2 } from "lucide-react";
+import { Sparkles, Copy, Check, Loader2, Settings, CheckCircle2 } from "lucide-react";
 import { CoreStory, CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
 import { IELTS_TOPICS } from "@/data/topics";
-import { getStories, getAdaptedStory, saveAdaptedStory } from "@/lib/store";
-import {
-  getUserApiKey,
-  getUserProvider,
-  saveUserApiKey,
-  clearUserApiKey,
-  hasUserApiKey,
-  type AIProvider,
-} from "@/lib/ai";
-
-const PROVIDER_LABELS: Record<AIProvider, string> = {
-  gemini: "Gemini",
-  deepseek: "DeepSeek",
-  openai: "OpenAI",
-};
+import { getStories, getAdaptedStory, saveAdaptedStory, getAdaptedStories, getAdaptedCountByStory, updateAdaptedContent } from "@/lib/store";
+import { hasUserApiKey, getUserApiKey, getUserProvider } from "@/lib/ai";
+import { ApiKeySetup, ApiKeyBadge } from "@/components/ApiKeySetup";
+import { TopicCombobox } from "@/components/TopicCombobox";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { SpeakButton } from "@/components/SpeakButton";
+import { EditableContent } from "@/components/EditableContent";
 
 export function AdaptContent() {
   const searchParams = useSearchParams();
   const preselectedTopic = searchParams.get("topic") || "";
+  const preselectedStory = searchParams.get("story") || "";
 
   const [stories, setStories] = useState<CoreStory[]>([]);
-  const [selectedStory, setSelectedStory] = useState("");
+  const [selectedStory, setSelectedStory] = useState(preselectedStory);
   const [selectedTopic, setSelectedTopic] = useState(preselectedTopic);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<{ adapted_content: string; tips: string } | null>(null);
   const [copied, setCopied] = useState(false);
-
-  // API key settings state
   const [showApiSetup, setShowApiSetup] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState("");
-  const [apiProvider, setApiProvider] = useState<AIProvider>("gemini");
-  const [apiConfigured, setApiConfigured] = useState(false);
-  const [apiSaveSuccess, setApiSaveSuccess] = useState(false);
+  const [showRegenConfirm, setShowRegenConfirm] = useState(false);
+  const [adaptedTopicIds, setAdaptedTopicIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setStories(getStories());
-    // Load saved API key state
-    if (hasUserApiKey()) {
-      setApiConfigured(true);
-      setApiKeyInput(getUserApiKey());
-      setApiProvider(getUserProvider());
-    }
+    const adapted = getAdaptedStories();
+    setAdaptedTopicIds(new Set(adapted.map((a) => a.topic_id)));
   }, []);
 
   useEffect(() => {
@@ -66,7 +51,7 @@ export function AdaptContent() {
   const story = stories.find((s) => s.id === selectedStory);
   const topic = IELTS_TOPICS.find((t) => t.id === selectedTopic);
 
-  async function handleGenerate() {
+  async function doGenerate() {
     if (!story || !topic) return;
     setLoading(true);
     setError("");
@@ -79,8 +64,7 @@ export function AdaptContent() {
         cue_card: topic.cue_card,
       };
 
-      // Include user API key if configured
-      if (apiConfigured && hasUserApiKey()) {
+      if (hasUserApiKey()) {
         body.userApiKey = getUserApiKey();
         body.userProvider = getUserProvider();
       }
@@ -115,6 +99,8 @@ export function AdaptContent() {
         adapted_content: data.adapted_content,
         tips: data.tips,
       });
+
+      setAdaptedTopicIds((prev) => { const next = new Set(Array.from(prev)); next.add(topic.id); return next; });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -122,27 +108,19 @@ export function AdaptContent() {
     }
   }
 
+  function handleGenerate() {
+    if (result) {
+      setShowRegenConfirm(true);
+      return;
+    }
+    doGenerate();
+  }
+
   async function handleCopy() {
     if (!result) return;
     await navigator.clipboard.writeText(result.adapted_content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
-
-  function handleSaveApiKey() {
-    if (!apiKeyInput.trim()) return;
-    saveUserApiKey(apiKeyInput.trim(), apiProvider);
-    setApiConfigured(true);
-    setApiSaveSuccess(true);
-    setTimeout(() => setApiSaveSuccess(false), 2000);
-  }
-
-  function handleClearApiKey() {
-    clearUserApiKey();
-    setApiKeyInput("");
-    setApiProvider("gemini");
-    setApiConfigured(false);
-    setApiSaveSuccess(false);
   }
 
   return (
@@ -162,56 +140,68 @@ export function AdaptContent() {
             </div>
           ) : (
             <div className="space-y-2">
-              {stories.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => setSelectedStory(s.id)}
-                  className={`w-full rounded-xl border p-4 text-left transition-all ${
-                    selectedStory === s.id
-                      ? "border-neon-blue bg-neon-blue/5"
-                      : "border-dark-border bg-dark-card hover:border-gray-600"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={CATEGORY_COLORS[s.category]}>{CATEGORY_LABELS[s.category]}</span>
-                    <span className="text-sm font-medium text-gray-200">{s.title}</span>
-                  </div>
-                  <p className="mt-2 line-clamp-2 text-xs text-gray-500">{s.content}</p>
-                </button>
-              ))}
+              {stories.map((s) => {
+                const adaptedCount = getAdaptedCountByStory(s.id);
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setSelectedStory(s.id)}
+                    className={`w-full rounded-xl border p-4 text-left transition-all ${
+                      selectedStory === s.id
+                        ? "border-neon-blue bg-neon-blue/5"
+                        : "border-dark-border bg-dark-card hover:border-gray-600"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={CATEGORY_COLORS[s.category]}>{CATEGORY_LABELS[s.category]}</span>
+                      <span className="text-sm font-medium text-gray-200">{s.title}</span>
+                      {adaptedCount > 0 && (
+                        <span className="ml-auto flex items-center gap-1 text-xs text-gray-500">
+                          <CheckCircle2 size={12} className="text-green-500/50" />
+                          {adaptedCount}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-2 line-clamp-2 text-xs text-gray-500">{s.content}</p>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
 
         <div>
           <p className="mb-3 text-xs font-medium text-gray-400">2. Choose a topic</p>
-          <select
+          <TopicCombobox
+            topics={IELTS_TOPICS}
             value={selectedTopic}
-            onChange={(e) => setSelectedTopic(e.target.value)}
-            className="input-dark"
-          >
-            <option value="">Select a topic...</option>
-            {IELTS_TOPICS.map((t) => (
-              <option key={t.id} value={t.id}>
-                [{CATEGORY_LABELS[t.category]}] {t.title}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedTopic}
+            adaptedTopicIds={adaptedTopicIds}
+          />
 
           {topic && (
             <div className="card mt-4">
-              <p className="text-xs font-medium text-gray-400">Cue Card</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-gray-400">Cue Card</p>
+                {selectedStory && getAdaptedStory(selectedStory, selectedTopic) && (
+                  <span className="flex items-center gap-1 text-xs text-green-400">
+                    <CheckCircle2 size={12} />
+                    Already adapted
+                  </span>
+                )}
+              </div>
               <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-gray-300">{topic.cue_card}</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-6 flex items-center gap-4">
+      <div className="mt-6 flex flex-wrap items-center gap-4">
         <button
           className="btn-neon-solid"
           disabled={!selectedStory || !selectedTopic || loading}
           onClick={handleGenerate}
+          title={!selectedStory || !selectedTopic ? "Select a story and topic to continue" : undefined}
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
           {loading ? "Generating..." : result ? "Regenerate" : "Adapt Story"}
@@ -221,97 +211,38 @@ export function AdaptContent() {
           onClick={() => setShowApiSetup(!showApiSetup)}
         >
           <Settings size={14} />
-          Settings
+          API Key
         </button>
-        {apiConfigured && !showApiSetup && (
-          <span className="flex items-center gap-1 text-xs text-green-400">
-            <KeyRound size={12} />
-            API Key configured ({PROVIDER_LABELS[apiProvider]})
-          </span>
-        )}
+        <ApiKeyBadge />
         {error && <p className="text-sm text-red-400">{error}</p>}
       </div>
 
-      {showApiSetup && (
-        <div className="card mt-4">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-200">
-              <KeyRound size={14} />
-              API Key Configuration
-            </h3>
-            {apiSaveSuccess && (
-              <span className="flex items-center gap-1 text-xs text-green-400">
-                <Check size={12} />
-                Saved
-              </span>
-            )}
-          </div>
-          <p className="mt-2 text-xs text-gray-500">
-            Use your own API key when the free quota is exhausted. Your key is stored locally in your browser.
-          </p>
-
-          <div className="mt-4">
-            <p className="mb-2 text-xs font-medium text-gray-400">Provider</p>
-            <div className="flex gap-2">
-              {(Object.keys(PROVIDER_LABELS) as AIProvider[]).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setApiProvider(p)}
-                  className={`rounded-lg border px-4 py-2 text-xs font-medium transition-all ${
-                    apiProvider === p
-                      ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
-                      : "border-dark-border bg-dark-card text-gray-400 hover:border-gray-500 hover:text-gray-300"
-                  }`}
-                >
-                  {PROVIDER_LABELS[p]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <p className="mb-2 text-xs font-medium text-gray-400">API Key</p>
-            <input
-              type="password"
-              value={apiKeyInput}
-              onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder={`Enter your ${PROVIDER_LABELS[apiProvider]} API key...`}
-              className="input-dark"
-            />
-          </div>
-
-          <div className="mt-4 flex items-center gap-3">
-            <button
-              className="btn-neon text-xs"
-              onClick={handleSaveApiKey}
-              disabled={!apiKeyInput.trim()}
-            >
-              <Check size={14} />
-              Save Key
-            </button>
-            {apiConfigured && (
-              <button className="btn-ghost text-xs text-red-400" onClick={handleClearApiKey}>
-                <Trash2 size={14} />
-                Clear Key
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+      <ApiKeySetup show={showApiSetup} />
 
       {result && (
         <div className="mt-8 space-y-5">
           <div className="card">
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-semibold text-gray-200">Adapted Response</h3>
-              <button onClick={handleCopy} className="btn-ghost text-xs">
-                {copied ? <Check size={14} className="text-neon-green" /> : <Copy size={14} />}
-                {copied ? "Copied" : "Copy"}
-              </button>
+              <div className="flex gap-1.5">
+                <SpeakButton text={result.adapted_content} />
+                <button onClick={handleCopy} className="btn-ghost !px-2 !py-1 text-xs" aria-label="Copy adapted response">
+                  {copied ? <Check size={12} className="text-neon-green" /> : <Copy size={12} />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              </div>
             </div>
-            <p className="mt-4 whitespace-pre-line text-sm leading-7 text-gray-300">
-              {result.adapted_content}
-            </p>
+            <EditableContent
+              content={result.adapted_content}
+              onSave={(newContent) => {
+                setResult({ ...result, adapted_content: newContent });
+                if (selectedStory && selectedTopic) {
+                  const existing = getAdaptedStory(selectedStory, selectedTopic);
+                  if (existing) updateAdaptedContent(existing.id, newContent);
+                }
+              }}
+              className="mt-4"
+            />
             <p className="mt-3 text-xs text-gray-600">
               {result.adapted_content.split(/\s+/).length} words
             </p>
@@ -325,6 +256,15 @@ export function AdaptContent() {
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={showRegenConfirm}
+        title="Regenerate Adaptation"
+        message="This will replace the existing adapted response. The current version will be lost."
+        confirmLabel="Regenerate"
+        onConfirm={() => { setShowRegenConfirm(false); doGenerate(); }}
+        onCancel={() => setShowRegenConfirm(false)}
+      />
     </div>
   );
 }

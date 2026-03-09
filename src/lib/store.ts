@@ -2,9 +2,21 @@ import { CoreStory, AdaptedStory } from "./types";
 
 const STORIES_KEY = "ielts_core_stories";
 const ADAPTED_KEY = "ielts_adapted_stories";
+const BATCH_STATE_KEY = "ielts_batch_state";
+const DATA_VERSION_KEY = "ielts_data_version";
+const CURRENT_VERSION = 1;
 
 function generateId(): string {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}-${Math.random().toString(36).slice(2, 5)}`;
+}
+
+// Data version migration
+export function ensureDataVersion(): void {
+  if (typeof window === "undefined") return;
+  const v = parseInt(localStorage.getItem(DATA_VERSION_KEY) || "0", 10);
+  if (v < CURRENT_VERSION) {
+    localStorage.setItem(DATA_VERSION_KEY, String(CURRENT_VERSION));
+  }
 }
 
 // Core Stories
@@ -38,12 +50,14 @@ export function updateStory(id: string, updates: Partial<CoreStory>): void {
   }
 }
 
-export function deleteStory(id: string): void {
+export function deleteStory(id: string): number {
   const stories = getStories().filter((s) => s.id !== id);
   localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
-  // Also delete adapted stories for this story
-  const adapted = getAdaptedStories().filter((a) => a.story_id !== id);
-  localStorage.setItem(ADAPTED_KEY, JSON.stringify(adapted));
+  const allAdapted = getAdaptedStories();
+  const remaining = allAdapted.filter((a) => a.story_id !== id);
+  const deletedCount = allAdapted.length - remaining.length;
+  localStorage.setItem(ADAPTED_KEY, JSON.stringify(remaining));
+  return deletedCount;
 }
 
 // Adapted Stories
@@ -62,7 +76,6 @@ export function getAdaptedStory(storyId: string, topicId: string): AdaptedStory 
 
 export function saveAdaptedStory(adapted: Omit<AdaptedStory, "id" | "created_at">): AdaptedStory {
   const all = getAdaptedStories();
-  // Replace if exists
   const existing = all.findIndex((a) => a.story_id === adapted.story_id && a.topic_id === adapted.topic_id);
   const newAdapted: AdaptedStory = {
     ...adapted,
@@ -84,4 +97,84 @@ export function getAdaptedCountByStory(storyId: string): number {
 
 export function getAdaptedCountByTopic(topicId: string): number {
   return getAdaptedStories().filter((a) => a.topic_id === topicId).length;
+}
+
+export function updateAdaptedContent(id: string, content: string): void {
+  const all = getAdaptedStories();
+  const index = all.findIndex((a) => a.id === id);
+  if (index !== -1) {
+    all[index] = { ...all[index], adapted_content: content };
+    localStorage.setItem(ADAPTED_KEY, JSON.stringify(all));
+  }
+}
+
+export function deleteAdaptedStory(id: string): void {
+  const all = getAdaptedStories().filter((a) => a.id !== id);
+  localStorage.setItem(ADAPTED_KEY, JSON.stringify(all));
+}
+
+// Batch state persistence (C-3)
+export interface BatchState {
+  storyId: string;
+  topicIds: string[];
+  completedTopicIds: string[];
+  failedTopicIds: string[];
+  timestamp: string;
+}
+
+export function saveBatchState(state: BatchState): void {
+  localStorage.setItem(BATCH_STATE_KEY, JSON.stringify(state));
+}
+
+export function getBatchState(): BatchState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(BATCH_STATE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearBatchState(): void {
+  localStorage.removeItem(BATCH_STATE_KEY);
+}
+
+// JSON export/import (C-2)
+export interface ExportData {
+  version: number;
+  exported_at: string;
+  stories: CoreStory[];
+  adapted_stories: AdaptedStory[];
+}
+
+export function exportAllData(): ExportData {
+  return {
+    version: CURRENT_VERSION,
+    exported_at: new Date().toISOString(),
+    stories: getStories(),
+    adapted_stories: getAdaptedStories(),
+  };
+}
+
+export function importAllData(data: ExportData): { stories: number; adapted: number } {
+  const stories = data.stories || [];
+  const adapted = data.adapted_stories || [];
+  localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
+  localStorage.setItem(ADAPTED_KEY, JSON.stringify(adapted));
+  localStorage.setItem(DATA_VERSION_KEY, String(CURRENT_VERSION));
+  return { stories: stories.length, adapted: adapted.length };
+}
+
+export function getStorageStats(): { stories: number; adapted: number; sizeKB: number } {
+  const stories = getStories();
+  const adapted = getAdaptedStories();
+  const size =
+    (localStorage.getItem(STORIES_KEY) || "").length +
+    (localStorage.getItem(ADAPTED_KEY) || "").length;
+  return {
+    stories: stories.length,
+    adapted: adapted.length,
+    sizeKB: Math.round(size / 1024),
+  };
 }

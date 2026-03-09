@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { NavLinks } from "@/components/NavLinks";
+import { DataSafetyBanner } from "@/components/DataSafetyBanner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,19 +25,20 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} font-[family-name:var(--font-geist-sans)] antialiased`}>
-        <header className="sticky top-0 z-50 border-b border-dark-border bg-dark-bg/90 backdrop-blur-md">
+        <header className="no-print sticky top-0 z-50 border-b border-dark-border bg-dark-bg/90 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
             <Link href="/" className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-neon-blue text-sm font-bold text-black">
                 IS
               </span>
-              <span className="text-sm font-semibold text-gray-200">IELTS Story Adapter</span>
+              <span className="hidden text-sm font-semibold text-gray-200 sm:inline">IELTS Story Adapter</span>
             </Link>
             <NavLinks />
           </div>
         </header>
+        <DataSafetyBanner />
         <main className="min-h-[calc(100vh-130px)]">{children}</main>
-        <footer className="border-t border-dark-border py-6 text-center text-sm text-gray-600">
+        <footer className="no-print border-t border-dark-border py-6 text-center text-sm text-gray-600">
           <a href="https://openvibelab.com" target="_blank" className="transition-colors hover:text-neon-blue">
             OpenVibeLab
           </a>{" "}
