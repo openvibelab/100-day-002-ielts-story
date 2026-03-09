@@ -9,8 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        neon: {
+          blue: "#00d4ff",
+          green: "#39ff14",
+          purple: "#bf5af2",
+        },
+        dark: {
+          bg: "#0a0a0f",
+          surface: "#12121a",
+          card: "#1a1a2e",
+          border: "#2a2a3e",
+        },
       },
     },
   },

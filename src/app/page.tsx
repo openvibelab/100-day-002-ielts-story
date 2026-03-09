@@ -1,101 +1,65 @@
-import Image from "next/image";
+import Link from "next/link";
+import { BookOpen, Brain, Network, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="page-container">
+      <div className="mx-auto max-w-3xl py-16 text-center">
+        <h1 className="text-4xl font-bold tracking-tight text-gray-100 md:text-5xl">
+          One story.<br />
+          <span className="neon-text">Every topic.</span>
+        </h1>
+        <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-gray-400">
+          Write a few personal core stories, then let AI adapt them to fit any IELTS Speaking Part 2 topic. Practice smarter, not harder.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <Link href="/stories" className="btn-neon-solid">
+            <Sparkles size={16} />
+            Get Started
+          </Link>
+          <Link href="/topics" className="btn-ghost">
+            Browse Topics
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <div className="mx-auto mt-8 grid max-w-4xl gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {[
+          {
+            icon: BookOpen,
+            title: "Write Stories",
+            desc: "Input your real personal stories — a trip, a friend, a meaningful object.",
+            href: "/stories",
+          },
+          {
+            icon: Brain,
+            title: "50 Topics",
+            desc: "Browse the current IELTS Part 2 topic bank, organized by category.",
+            href: "/topics",
+          },
+          {
+            icon: Sparkles,
+            title: "AI Adapt",
+            desc: "Pick a story + topic. AI rewrites your story to answer that cue card.",
+            href: "/adapt",
+          },
+          {
+            icon: Network,
+            title: "Mind Map",
+            desc: "Visualize which stories cover which topics. Find gaps at a glance.",
+            href: "/mind-map",
+          },
+        ].map((item) => (
+          <Link key={item.href} href={item.href} className="card-hover group">
+            <item.icon
+              size={24}
+              className="text-neon-blue transition-all group-hover:drop-shadow-[0_0_8px_rgba(0,212,255,0.5)]"
+            />
+            <h3 className="mt-3 text-sm font-semibold text-gray-200">{item.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-gray-500">{item.desc}</p>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

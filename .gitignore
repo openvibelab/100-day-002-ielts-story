@@ -34,3 +34,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# data files
+*.pdf
+ielts-part2-topics.json
+temp_*
+
+# env
+.env

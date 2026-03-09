@@ -1,0 +1,51 @@
+import { IELTSTopic } from "@/lib/types";
+
+export const IELTS_TOPICS: IELTSTopic[] = [
+  // Person topics
+  { id: "p1", title: "A person who taught you something", category: "person", cue_card: "Describe a person who taught you something useful. You should say:\n- who this person is\n- what they taught you\n- how they taught you\nand explain why this was useful to you." },
+  { id: "p2", title: "A friend you enjoy talking to", category: "person", cue_card: "Describe a friend you enjoy talking to. You should say:\n- who this person is\n- how you know them\n- what you talk about\nand explain why you enjoy talking to them." },
+  { id: "p3", title: "A person who inspires you", category: "person", cue_card: "Describe a person who inspires you. You should say:\n- who this person is\n- how you know them\n- what they do\nand explain why they inspire you." },
+  { id: "p4", title: "A family member you admire", category: "person", cue_card: "Describe a family member you admire. You should say:\n- who they are\n- what they do\n- what qualities they have\nand explain why you admire them." },
+  { id: "p5", title: "A person who is good at their job", category: "person", cue_card: "Describe a person who is very good at their job. You should say:\n- who they are\n- what job they do\n- how you know them\nand explain why they are good at it." },
+  { id: "p6", title: "A person you met at a party", category: "person", cue_card: "Describe a person you met at a party or celebration. You should say:\n- who they were\n- when you met them\n- what you talked about\nand explain how you felt about meeting them." },
+  { id: "p7", title: "An old person you know and respect", category: "person", cue_card: "Describe an old person you know and respect. You should say:\n- who they are\n- how you know them\n- what they are like\nand explain why you respect them." },
+  { id: "p8", title: "A person who helped you in difficult time", category: "person", cue_card: "Describe a person who helped you during a difficult time. You should say:\n- who they are\n- when it was\n- how they helped you\nand explain how you felt about their help." },
+
+  // Event topics
+  { id: "e1", title: "A memorable trip", category: "event", cue_card: "Describe a memorable trip you have taken. You should say:\n- where you went\n- who you went with\n- what you did there\nand explain why it was memorable." },
+  { id: "e2", title: "A time you helped someone", category: "event", cue_card: "Describe a time when you helped someone. You should say:\n- who you helped\n- what the situation was\n- how you helped them\nand explain how you felt about helping." },
+  { id: "e3", title: "An achievement you are proud of", category: "event", cue_card: "Describe an achievement you are proud of. You should say:\n- what you achieved\n- when it happened\n- how you achieved it\nand explain why you are proud of it." },
+  { id: "e4", title: "A time you had to wait for something", category: "event", cue_card: "Describe a time when you had to wait for something. You should say:\n- what you were waiting for\n- where you waited\n- how long you waited\nand explain how you felt about waiting." },
+  { id: "e5", title: "A celebration you attended", category: "event", cue_card: "Describe a celebration or festival you attended. You should say:\n- what it was\n- where it took place\n- what you did there\nand explain why you enjoyed it." },
+  { id: "e6", title: "A difficult decision you made", category: "event", cue_card: "Describe a difficult decision you had to make. You should say:\n- what the decision was\n- when you had to make it\n- what options you had\nand explain why it was difficult." },
+  { id: "e7", title: "A time you learned from a mistake", category: "event", cue_card: "Describe a time you learned from a mistake. You should say:\n- what the mistake was\n- when it happened\n- what you learned\nand explain how it changed your behavior." },
+  { id: "e8", title: "A time you received good news", category: "event", cue_card: "Describe a time when you received some good news. You should say:\n- what the news was\n- when you received it\n- who told you\nand explain how you felt about it." },
+  { id: "e9", title: "A sports event you watched", category: "event", cue_card: "Describe a sports event you watched or participated in. You should say:\n- what sport it was\n- where it took place\n- who was involved\nand explain why it was interesting." },
+  { id: "e10", title: "A time you changed your mind", category: "event", cue_card: "Describe a time you changed your mind about something. You should say:\n- what you changed your mind about\n- when it happened\n- what made you change\nand explain how you felt after changing your mind." },
+  { id: "e11", title: "A time you were late", category: "event", cue_card: "Describe a time you were late for something. You should say:\n- what you were late for\n- why you were late\n- what happened as a result\nand explain how you felt about being late." },
+  { id: "e12", title: "A time you tried something new", category: "event", cue_card: "Describe a time you tried something for the first time. You should say:\n- what you tried\n- when it was\n- why you tried it\nand explain how you felt about the experience." },
+
+  // Object topics
+  { id: "o1", title: "A gift you received", category: "object", cue_card: "Describe a gift you received that was important to you. You should say:\n- what it was\n- who gave it to you\n- when you received it\nand explain why it was important." },
+  { id: "o2", title: "A piece of technology you use", category: "object", cue_card: "Describe a piece of technology you use often. You should say:\n- what it is\n- when you got it\n- how you use it\nand explain why it is important to you." },
+  { id: "o3", title: "A book that influenced you", category: "object", cue_card: "Describe a book that influenced you. You should say:\n- what the book is about\n- when you read it\n- why you decided to read it\nand explain how it influenced you." },
+  { id: "o4", title: "Something you own that is special", category: "object", cue_card: "Describe something you own that is special to you. You should say:\n- what it is\n- how you got it\n- how long you have had it\nand explain why it is special to you." },
+  { id: "o5", title: "A photo that you remember well", category: "object", cue_card: "Describe a photo that you remember well. You should say:\n- what is in the photo\n- when it was taken\n- who took it\nand explain why you remember it well." },
+  { id: "o6", title: "A toy you liked in childhood", category: "object", cue_card: "Describe a toy you liked when you were a child. You should say:\n- what the toy was\n- who gave it to you\n- how you played with it\nand explain why you liked it." },
+  { id: "o7", title: "A movie you enjoyed recently", category: "object", cue_card: "Describe a movie you watched recently that you enjoyed. You should say:\n- what the movie was about\n- when you watched it\n- who you watched it with\nand explain why you enjoyed it." },
+  { id: "o8", title: "An item of clothing you like", category: "object", cue_card: "Describe an item of clothing you like wearing. You should say:\n- what it is\n- where you got it\n- when you wear it\nand explain why you like it." },
+  { id: "o9", title: "A song you like listening to", category: "object", cue_card: "Describe a song you like listening to. You should say:\n- what the song is\n- when you first heard it\n- what it is about\nand explain why you like it." },
+  { id: "o10", title: "A website you visit often", category: "object", cue_card: "Describe a website you visit often. You should say:\n- what the website is\n- what it offers\n- how often you visit it\nand explain why you visit it often." },
+
+  // Place topics
+  { id: "l1", title: "A place you visited on holiday", category: "place", cue_card: "Describe a place you visited on holiday. You should say:\n- where it is\n- when you went there\n- what you did there\nand explain why you liked it." },
+  { id: "l2", title: "A quiet place you like", category: "place", cue_card: "Describe a quiet place you like to go to. You should say:\n- where it is\n- how you found it\n- how often you go there\nand explain why you like it." },
+  { id: "l3", title: "A shop you like to visit", category: "place", cue_card: "Describe a shop you like to visit. You should say:\n- where it is\n- what it sells\n- how often you go there\nand explain why you like it." },
+  { id: "l4", title: "A park or garden you enjoy", category: "place", cue_card: "Describe a park or garden you enjoy visiting. You should say:\n- where it is\n- what it looks like\n- what people do there\nand explain why you enjoy going there." },
+  { id: "l5", title: "A city you would like to visit", category: "place", cue_card: "Describe a city you would like to visit in the future. You should say:\n- what city it is\n- where it is\n- what you know about it\nand explain why you want to visit it." },
+  { id: "l6", title: "A restaurant you enjoyed", category: "place", cue_card: "Describe a restaurant you enjoyed eating at. You should say:\n- where it is\n- what kind of food it serves\n- who you went with\nand explain why you enjoyed it." },
+  { id: "l7", title: "Your favorite room in your home", category: "place", cue_card: "Describe your favorite room in your home. You should say:\n- which room it is\n- what it looks like\n- what you do there\nand explain why it is your favorite." },
+  { id: "l8", title: "A place where you go to relax", category: "place", cue_card: "Describe a place where you go to relax. You should say:\n- where the place is\n- how you found it\n- what you do there\nand explain why it helps you relax." },
+  { id: "l9", title: "A historical place you visited", category: "place", cue_card: "Describe a historical place you have visited. You should say:\n- what the place is\n- where it is located\n- what you saw there\nand explain why it was interesting." },
+  { id: "l10", title: "A place crowded with people", category: "place", cue_card: "Describe a place that is often crowded with people. You should say:\n- what place it is\n- when it is crowded\n- what people do there\nand explain how you feel about the crowds." },
+];

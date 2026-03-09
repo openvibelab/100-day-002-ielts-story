@@ -2,26 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #0a0a0f;
+  color: #e0e0e0;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: #fff;
+}
+
+@layer components {
+  .neon-text {
+    color: #00d4ff;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
   }
+
+  .neon-green-text {
+    color: #39ff14;
+    text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+  }
+
+  .card {
+    @apply rounded-xl border border-dark-border bg-dark-card p-5;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200;
+  }
+
+  .card-hover:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1), 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .btn-neon {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-200;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.05));
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    color: #00d4ff;
+  }
+
+  .btn-neon:hover {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(0, 212, 255, 0.1));
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+  }
+
+  .btn-neon:disabled {
+    @apply cursor-not-allowed opacity-40;
+  }
+
+  .btn-neon-solid {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-black transition-all duration-200;
+    background: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+  }
+
+  .btn-neon-solid:hover {
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-neon-solid:disabled {
+    @apply cursor-not-allowed opacity-40;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-dark-border px-5 py-2.5 text-sm font-medium text-gray-400 transition-all duration-200 hover:border-gray-500 hover:text-gray-200;
+  }
+
+  .input-dark {
+    @apply w-full rounded-lg border border-dark-border bg-dark-surface px-4 py-3 text-sm text-gray-200 outline-none transition-colors placeholder:text-gray-600 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue/30;
+  }
+
+  .textarea-dark {
+    @apply input-dark min-h-[120px] resize-y leading-relaxed;
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium;
+  }
+
+  .tag-person { @apply tag border border-blue-500/30 bg-blue-500/10 text-blue-400; }
+  .tag-event { @apply tag border border-green-500/30 bg-green-500/10 text-green-400; }
+  .tag-object { @apply tag border border-purple-500/30 bg-purple-500/10 text-purple-400; }
+  .tag-place { @apply tag border border-amber-500/30 bg-amber-500/10 text-amber-400; }
+}
+
+/* React Flow overrides for dark theme */
+.react-flow__background {
+  background: #0a0a0f !important;
+}
+
+.react-flow__minimap {
+  background: #12121a !important;
+}
+
+.react-flow__controls button {
+  background: #1a1a2e !important;
+  border-color: #2a2a3e !important;
+  color: #e0e0e0 !important;
+}
+
+.react-flow__controls button:hover {
+  background: #2a2a3e !important;
 }
