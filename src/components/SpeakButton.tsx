@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Volume2, Square } from "lucide-react";
+import { useLang } from "@/lib/LangContext";
+import { ts } from "@/lib/i18n";
 
 interface SpeakButtonProps {
   text: string;
@@ -13,13 +15,13 @@ export function SpeakButton({ text, className = "", size = "sm" }: SpeakButtonPr
   const [speaking, setSpeaking] = useState(false);
   const [supported, setSupported] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const { locale } = useLang();
 
   useEffect(() => {
     setSupported(typeof window !== "undefined" && "speechSynthesis" in window);
   }, []);
 
   useEffect(() => {
-    // Cleanup on unmount
     return () => {
       if (speaking) {
         window.speechSynthesis.cancel();
@@ -41,7 +43,6 @@ export function SpeakButton({ text, className = "", size = "sm" }: SpeakButtonPr
     utterance.rate = 0.9;
     utterance.pitch = 1;
 
-    // Try to find a good English voice
     const voices = window.speechSynthesis.getVoices();
     const englishVoice = voices.find(
       (v) => v.lang.startsWith("en") && v.name.includes("Female")
@@ -70,11 +71,11 @@ export function SpeakButton({ text, className = "", size = "sm" }: SpeakButtonPr
           ? "border-neon-blue/50 bg-neon-blue/10 text-neon-blue"
           : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
       } ${size === "sm" ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-xs"} ${className}`}
-      aria-label={speaking ? "Stop speaking" : "Read aloud"}
-      title={speaking ? "Stop" : "Read aloud (TTS)"}
+      aria-label={speaking ? ts("speakStop", locale) : ts("speakListen", locale)}
+      title={speaking ? ts("speakStop", locale) : ts("speakListen", locale)}
     >
       {speaking ? <Square size={iconSize} /> : <Volume2 size={iconSize} />}
-      {speaking ? "Stop" : "Listen"}
+      {speaking ? ts("speakStop", locale) : ts("speakListen", locale)}
     </button>
   );
 }

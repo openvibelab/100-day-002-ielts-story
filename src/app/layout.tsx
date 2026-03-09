@@ -5,6 +5,8 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { NavLinks } from "@/components/NavLinks";
 import { DataSafetyBanner } from "@/components/DataSafetyBanner";
+import { LangProvider } from "@/lib/LangContext";
+import { LangToggle } from "@/components/LangToggle";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} font-[family-name:var(--font-geist-sans)] antialiased`}>
+        <LangProvider>
         <header className="no-print sticky top-0 z-50 border-b border-dark-border bg-dark-bg/90 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
             <Link href="/" className="flex items-center gap-3">
@@ -33,7 +36,10 @@ export default function RootLayout({
               </span>
               <span className="hidden text-sm font-semibold text-gray-200 sm:inline">IELTS Story Adapter</span>
             </Link>
-            <NavLinks />
+            <div className="flex items-center gap-2">
+              <NavLinks />
+              <LangToggle />
+            </div>
           </div>
         </header>
         <DataSafetyBanner />
@@ -44,6 +50,7 @@ export default function RootLayout({
           </a>{" "}
           · Day 002
         </footer>
+        </LangProvider>
         <Analytics />
       </body>
     </html>

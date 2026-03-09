@@ -10,6 +10,8 @@ import {
   hasUserApiKey,
   type AIProvider,
 } from "@/lib/ai";
+import { useLang } from "@/lib/LangContext";
+import { ts } from "@/lib/i18n";
 
 const PROVIDER_LABELS: Record<AIProvider, string> = {
   gemini: "Gemini",
@@ -27,6 +29,7 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
   const [apiProvider, setApiProvider] = useState<AIProvider>("gemini");
   const [apiConfigured, setApiConfigured] = useState(false);
   const [apiSaveSuccess, setApiSaveSuccess] = useState(false);
+  const { locale } = useLang();
 
   useEffect(() => {
     if (hasUserApiKey()) {
@@ -61,20 +64,20 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-200">
           <KeyRound size={14} />
-          API Key Configuration
+          {ts("apiKeyTitle", locale)}
         </h3>
         {apiSaveSuccess && (
           <span className="flex items-center gap-1 text-xs text-green-400">
-            <Check size={12} /> Saved
+            <Check size={12} /> {ts("apiKeySaved", locale)}
           </span>
         )}
       </div>
       <p className="mt-2 text-xs text-gray-500">
-        Use your own API key when the free quota is exhausted. Your key is stored locally in your browser.
+        {ts("apiKeyDesc", locale)}
       </p>
 
       <div className="mt-4">
-        <p className="mb-2 text-xs font-medium text-gray-400">Provider</p>
+        <p className="mb-2 text-xs font-medium text-gray-400">{ts("apiKeyProvider", locale)}</p>
         <div className="flex gap-2">
           {(Object.keys(PROVIDER_LABELS) as AIProvider[]).map((p) => (
             <button
@@ -94,7 +97,7 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
 
       <div className="mt-4">
         <label htmlFor="api-key-input" className="mb-2 block text-xs font-medium text-gray-400">
-          API Key
+          {ts("apiKeyLabel", locale)}
         </label>
         <input
           id="api-key-input"
@@ -112,15 +115,15 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
           onClick={handleSave}
           disabled={!apiKeyInput.trim()}
         >
-          <Check size={14} /> Save Key
+          <Check size={14} /> {ts("apiKeySave", locale)}
         </button>
         {apiConfigured && (
           <button
             className="btn-ghost text-xs text-red-400"
             onClick={handleClear}
-            aria-label="Clear API key"
+            aria-label={ts("apiKeyClear", locale)}
           >
-            <Trash2 size={14} /> Clear Key
+            <Trash2 size={14} /> {ts("apiKeyClear", locale)}
           </button>
         )}
       </div>

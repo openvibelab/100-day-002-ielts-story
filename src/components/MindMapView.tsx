@@ -11,11 +11,13 @@ import ReactFlow, {
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { CoreStory, CATEGORY_LABELS } from "@/lib/types";
+import { CoreStory } from "@/lib/types";
 import { getStories, getAdaptedStories } from "@/lib/store";
 import { IELTS_TOPICS } from "@/data/topics";
 import { AdaptedStory } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/lib/LangContext";
+import { ts, catLabel } from "@/lib/i18n";
 
 const CATEGORY_NODE_COLORS: Record<string, string> = {
   person: "#3b82f6",
@@ -29,6 +31,7 @@ export default function MindMapView() {
   const [adapted, setAdapted] = useState<AdaptedStory[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { locale } = useLang();
 
   useEffect(() => {
     setStories(getStories());
@@ -40,11 +43,10 @@ export default function MindMapView() {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
 
-    // Center node
     nodes.push({
       id: "center",
       position: { x: 400, y: 300 },
-      data: { label: "My Stories" },
+      data: { label: ts("mindMapMyStories", locale) },
       style: {
         background: "#00d4ff",
         color: "#000",
@@ -57,7 +59,6 @@ export default function MindMapView() {
       },
     });
 
-    // Story nodes in a circle around center
     const storyRadius = 250;
     stories.forEach((story, i) => {
       const angle = (2 * Math.PI * i) / Math.max(stories.length, 1) - Math.PI / 2;
@@ -72,7 +73,7 @@ export default function MindMapView() {
           label: (
             <div>
               <div style={{ fontSize: "10px", opacity: 0.7, marginBottom: 2 }}>
-                {CATEGORY_LABELS[story.category]}
+                {catLabel(story.category, locale)}
               </div>
               <div style={{ fontSize: "12px", fontWeight: 600 }}>{story.title}</div>
             </div>
@@ -99,12 +100,9 @@ export default function MindMapView() {
         animated: true,
       });
 
-      // Spread topic nodes using force-directed-like layout (M-3)
       const storyAdapted = adapted.filter((a) => a.story_id === story.id);
       const topicCount = storyAdapted.length;
-      // Dynamic radius based on count to prevent overlap
       const topicRadius = Math.max(120, Math.min(200, 80 + topicCount * 15));
-      // Spread angle evenly across the available arc
       const arcSpread = Math.min(Math.PI * 1.5, topicCount * 0.35);
 
       storyAdapted.forEach((a, j) => {
@@ -151,7 +149,7 @@ export default function MindMapView() {
     });
 
     return { initialNodes: nodes, initialEdges: edges };
-  }, [stories, adapted]);
+  }, [stories, adapted, locale]);
 
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edgesState, , onEdgesChange] = useEdgesState(initialEdges);
@@ -161,7 +159,6 @@ export default function MindMapView() {
     onEdgesChange(initialEdges.map((e) => ({ type: "reset" as const, item: e })));
   }, [initialNodes, initialEdges, onNodesChange, onEdgesChange]);
 
-  // Handle node click — navigate to adapt page (M-3)
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     if (node.data?.topicId && node.data?.storyId) {
       router.push(`/adapt?topic=${node.data.topicId}&story=${node.data.storyId}`);
@@ -171,7 +168,7 @@ export default function MindMapView() {
   if (loading) {
     return (
       <div className="page-container">
-        <h1 className="text-2xl font-bold text-gray-100">Mind Map</h1>
+        <h1 className="text-2xl font-bold text-gray-100">{ts("mindMapTitle", locale)}</h1>
         <div className="skeleton mt-6 h-[60vh] w-full" />
       </div>
     );
@@ -180,14 +177,14 @@ export default function MindMapView() {
   if (stories.length === 0) {
     return (
       <div className="page-container">
-        <h1 className="text-2xl font-bold text-gray-100">Mind Map</h1>
+        <h1 className="text-2xl font-bold text-gray-100">{ts("mindMapTitle", locale)}</h1>
         <p className="mt-2 text-sm text-gray-500">
-          Visualize how your stories connect to IELTS topics.
+          {ts("mindMapDesc", locale)}
         </p>
         <div className="card mt-6 py-16 text-center">
-          <p className="text-lg font-semibold text-gray-300">Nothing to show yet</p>
-          <p className="mt-2 text-sm text-gray-500">Add stories and adapt them to see how your corpus grows.</p>
-          <a href="/stories" className="btn-neon mt-6 text-xs">Add Stories</a>
+          <p className="text-lg font-semibold text-gray-300">{ts("mindMapEmpty", locale)}</p>
+          <p className="mt-2 text-sm text-gray-500">{ts("mindMapEmptyDesc", locale)}</p>
+          <a href="/stories" className="btn-neon mt-6 text-xs">{ts("mindMapAddStories", locale)}</a>
         </div>
       </div>
     );
@@ -197,20 +194,18 @@ export default function MindMapView() {
 
   return (
     <div className="no-print">
-      {/* Page title overlay (m-6) */}
       <div className="absolute left-4 top-[80px] z-10 md:left-6">
-        <h1 className="text-lg font-bold text-gray-100">Mind Map</h1>
+        <h1 className="text-lg font-bold text-gray-100">{ts("mindMapTitle", locale)}</h1>
         <p className="text-xs text-gray-500">
-          {stories.length} stories · {totalAdapted} adaptations · Click a topic to view
+          {stories.length} {ts("progressStories", locale)} · {totalAdapted} {ts("progressAdaptations", locale)} · {ts("mindMapClickToView", locale)}
         </p>
       </div>
 
-      {/* Legend overlay (m-6) */}
       <div className="absolute right-4 top-[80px] z-10 flex flex-wrap gap-2 md:right-6">
         {Object.entries(CATEGORY_NODE_COLORS).map(([cat, color]) => (
           <div key={cat} className="flex items-center gap-1.5">
             <div className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
-            <span className="text-[10px] text-gray-500">{CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]}</span>
+            <span className="text-[10px] text-gray-500">{catLabel(cat as "person" | "event" | "object" | "place", locale)}</span>
           </div>
         ))}
       </div>

@@ -13,7 +13,7 @@ import {
   Settings,
   PartyPopper,
 } from "lucide-react";
-import { CoreStory, StoryCategory, CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
+import { CoreStory, StoryCategory, CATEGORY_COLORS } from "@/lib/types";
 import { IELTS_TOPICS } from "@/data/topics";
 import {
   getStories,
@@ -27,6 +27,8 @@ import {
 import { hasUserApiKey, getUserApiKey, getUserProvider } from "@/lib/ai";
 import { ApiKeySetup, ApiKeyBadge } from "@/components/ApiKeySetup";
 import Link from "next/link";
+import { useLang } from "@/lib/LangContext";
+import { ts, t, catLabel } from "@/lib/i18n";
 
 type TaskStatus = "pending" | "running" | "done" | "error" | "skipped";
 
@@ -62,12 +64,12 @@ export default function BatchPage() {
   const [showApiSetup, setShowApiSetup] = useState(false);
   const [showResume, setShowResume] = useState(false);
   const [resumeInfo, setResumeInfo] = useState<{ storyTitle: string; remaining: number } | null>(null);
+  const { locale } = useLang();
 
   useEffect(() => {
     const loadedStories = getStories();
     setStories(loadedStories);
 
-    // Check for resumable batch state (C-3)
     const saved = getBatchState();
     if (saved) {
       const story = loadedStories.find((s) => s.id === saved.storyId);
@@ -159,7 +161,6 @@ export default function BatchPage() {
     setTasks(taskList);
     setProgress({ done: 0, total: taskList.length });
 
-    // Save batch state for resume (C-3)
     const batchState = {
       storyId: story.id,
       topicIds,
@@ -180,7 +181,6 @@ export default function BatchPage() {
       const task = taskList[i];
       const topic = IELTS_TOPICS.find((t) => t.id === task.topicId)!;
 
-      // Skip if already adapted
       if (skipExisting && getAdaptedStory(story.id, task.topicId)) {
         taskList[i] = { ...task, status: "skipped" };
         batchState.completedTopicIds.push(task.topicId);
@@ -238,7 +238,6 @@ export default function BatchPage() {
       setProgress({ done: i + 1, total: taskList.length });
       saveBatchState(batchState);
 
-      // Configurable delay (M-9, N-5)
       if (i < taskList.length - 1 && !abortRef.current) {
         await new Promise((r) => setTimeout(r, delay));
       }
@@ -264,7 +263,6 @@ export default function BatchPage() {
   const errorCount = tasks.filter((t) => t.status === "error").length;
   const skippedCount = tasks.filter((t) => t.status === "skipped").length;
 
-  // Estimate remaining time
   const remainingTasks = tasks.filter((t) => t.status === "pending").length;
   const estimatedSeconds = Math.round(remainingTasks * ((delay + 2000) / 1000));
   const estimatedMin = Math.floor(estimatedSeconds / 60);
@@ -272,25 +270,25 @@ export default function BatchPage() {
 
   return (
     <div className="page-container">
-      <h1 className="text-2xl font-bold text-gray-100">Batch Adapt</h1>
+      <h1 className="text-2xl font-bold text-gray-100">{ts("batchTitle", locale)}</h1>
       <p className="mt-2 text-sm text-gray-500">
-        Select a story and multiple topics. AI will adapt your story to each topic one by one.
+        {ts("batchDesc", locale)}
       </p>
 
-      {/* Resume banner (C-3) */}
+      {/* Resume banner */}
       {showResume && resumeInfo && (
         <div className="card mt-4 flex items-center justify-between gap-3 border-amber-500/30 bg-amber-500/5">
           <div>
             <p className="text-sm text-amber-400">
-              Unfinished batch: &quot;{resumeInfo.storyTitle}&quot; — {resumeInfo.remaining} topics remaining
+              {(t("batchUnfinished", locale) as (title: string, n: number) => string)(resumeInfo.storyTitle, resumeInfo.remaining)}
             </p>
           </div>
           <div className="flex gap-2">
             <button onClick={handleResume} className="btn-neon text-xs">
-              Resume
+              {ts("batchResume", locale)}
             </button>
             <button onClick={handleDismissResume} className="btn-ghost text-xs">
-              Dismiss
+              {ts("batchDismiss", locale)}
             </button>
           </div>
         </div>
@@ -298,12 +296,12 @@ export default function BatchPage() {
 
       {/* Step 1: Choose story */}
       <div className="mt-6">
-        <p className="mb-3 text-xs font-medium text-gray-400">1. Choose a story</p>
+        <p className="mb-3 text-xs font-medium text-gray-400">{ts("batchStep1", locale)}</p>
         {stories.length === 0 ? (
           <div className="card py-10 text-center">
-            <p className="text-sm text-gray-500">No stories yet.</p>
+            <p className="text-sm text-gray-500">{ts("adaptNoStories", locale)}</p>
             <Link href="/stories" className="btn-neon mt-4 text-xs">
-              Add a story first
+              {ts("adaptAddFirst", locale)}
             </Link>
           </div>
         ) : (
@@ -321,7 +319,7 @@ export default function BatchPage() {
               >
                 <div className="flex items-center gap-2">
                   <span className={CATEGORY_COLORS[s.category] + " !text-[10px] !px-1.5 !py-0.5"}>
-                    {CATEGORY_LABELS[s.category]}
+                    {catLabel(s.category, locale)}
                   </span>
                   <span className="min-w-0 truncate text-sm font-medium text-gray-200">{s.title}</span>
                 </div>
@@ -335,10 +333,9 @@ export default function BatchPage() {
       {selectedStory && (
         <div className="mt-6">
           <p className="mb-3 text-xs font-medium text-gray-400">
-            2. Choose topics ({selectedTopics.size} selected)
+            {(t("batchStep2Selected", locale) as (n: number) => string)(selectedTopics.size)}
           </p>
 
-          {/* Filter + actions */}
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setFilterCat("all")}
@@ -349,7 +346,7 @@ export default function BatchPage() {
                   : "border-dark-border text-gray-500 hover:text-gray-300"
               }`}
             >
-              All
+              {ts("catAll", locale)}
             </button>
             {CATEGORIES.map((cat) => (
               <button
@@ -362,18 +359,18 @@ export default function BatchPage() {
                     : "border-dark-border text-gray-500 hover:text-gray-300"
                 }`}
               >
-                {CATEGORY_LABELS[cat]}
+                {catLabel(cat, locale)}
               </button>
             ))}
             <span className="mx-1 text-gray-700">|</span>
             <button onClick={selectAll} disabled={running} className="text-xs text-neon-blue hover:underline">
-              Select All
+              {ts("batchSelectAll", locale)}
             </button>
             <button onClick={selectNone} disabled={running} className="text-xs text-gray-500 hover:underline">
-              Clear
+              {ts("batchClear", locale)}
             </button>
             <button onClick={selectUnadapted} disabled={running} className="text-xs text-neon-green hover:underline">
-              Untouched Only
+              {ts("batchUntouched", locale)}
             </button>
           </div>
 
@@ -386,10 +383,10 @@ export default function BatchPage() {
                 disabled={running}
                 className="accent-neon-blue"
               />
-              Skip already adapted
+              {ts("batchSkipExisting", locale)}
             </label>
             <label className="flex items-center gap-2 text-xs text-gray-400">
-              Delay:
+              {ts("batchDelay", locale)}
               <select
                 value={delay}
                 onChange={(e) => setDelay(Number(e.target.value))}
@@ -403,18 +400,17 @@ export default function BatchPage() {
             </label>
           </div>
 
-          {/* Topic grid with scroll hint (m-3) */}
           <div className="scroll-fade-bottom relative mt-3 max-h-[360px] overflow-y-auto pr-1">
             <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredTopics.map((t) => {
-                const selected = selectedTopics.has(t.id);
+              {filteredTopics.map((tp) => {
+                const selected = selectedTopics.has(tp.id);
                 const hasAdapted = selectedStory
-                  ? !!getAdaptedStory(selectedStory, t.id)
+                  ? !!getAdaptedStory(selectedStory, tp.id)
                   : false;
                 return (
                   <button
-                    key={t.id}
-                    onClick={() => toggleTopic(t.id)}
+                    key={tp.id}
+                    onClick={() => toggleTopic(tp.id)}
                     disabled={running}
                     className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs transition-all ${
                       selected
@@ -427,7 +423,7 @@ export default function BatchPage() {
                     ) : (
                       <Square size={14} className="shrink-0 text-gray-600" />
                     )}
-                    <span className="min-w-0 truncate text-gray-300">{t.title}</span>
+                    <span className="min-w-0 truncate text-gray-300">{tp.title}</span>
                     {hasAdapted && (
                       <CheckCircle2 size={12} className="ml-auto shrink-0 text-green-500/50" />
                     )}
@@ -449,23 +445,23 @@ export default function BatchPage() {
               onClick={handleStart}
             >
               <Sparkles size={16} />
-              Start Batch ({selectedTopics.size} topics)
+              {(t("batchStart", locale) as (n: number) => string)(selectedTopics.size)}
             </button>
           ) : (
             <>
               <button className="btn-ghost text-xs" onClick={handlePauseResume}>
                 {paused ? <Play size={14} /> : <Pause size={14} />}
-                {paused ? "Resume" : "Pause"}
+                {paused ? ts("batchResume", locale) : ts("batchPause", locale)}
               </button>
               <button
                 className="btn-ghost text-xs text-red-400"
                 onClick={handleStop}
               >
-                Stop
+                {ts("stop", locale)}
               </button>
               {remainingTasks > 0 && (
                 <span className="text-xs text-gray-500">
-                  ~{estimatedMin > 0 ? `${estimatedMin}m ` : ""}{estimatedSec}s remaining
+                  ~{estimatedMin > 0 ? `${estimatedMin}m ` : ""}{estimatedSec}s {ts("batchRemaining", locale)}
                 </span>
               )}
             </>
@@ -476,7 +472,7 @@ export default function BatchPage() {
             onClick={() => setShowApiSetup(!showApiSetup)}
           >
             <Settings size={14} />
-            API Key
+            {ts("adaptApiKey", locale)}
           </button>
           <ApiKeyBadge />
         </div>
@@ -484,24 +480,24 @@ export default function BatchPage() {
 
       <ApiKeySetup show={showApiSetup} />
 
-      {/* Completion summary (M-5) */}
+      {/* Completion summary */}
       {finished && !running && tasks.length > 0 && (
         <div className="card mt-6 border-green-500/20 bg-green-500/5">
           <div className="flex items-center gap-3">
             <PartyPopper size={24} className="text-green-400" />
             <div>
-              <h3 className="text-sm font-semibold text-green-400">Batch Complete!</h3>
+              <h3 className="text-sm font-semibold text-green-400">{ts("batchComplete", locale)}</h3>
               <p className="mt-1 text-xs text-gray-400">
-                {doneCount} generated · {skippedCount} skipped · {errorCount} failed
+                {doneCount} {ts("batchGenerated", locale)} · {skippedCount} {ts("batchSkipped", locale)} · {errorCount} {ts("batchFailed", locale)}
               </p>
             </div>
           </div>
           <div className="mt-4 flex gap-3">
             <Link href="/corpus" className="btn-neon text-xs">
-              View Corpus
+              {ts("batchViewCorpus", locale)}
             </Link>
             <Link href="/mind-map" className="btn-ghost text-xs">
-              See Mind Map
+              {ts("batchSeeMindMap", locale)}
             </Link>
           </div>
         </div>
@@ -513,9 +509,9 @@ export default function BatchPage() {
           <div className="flex items-center justify-between text-xs text-gray-400">
             <span>
               {progress.done}/{progress.total}
-              {doneCount > 0 && <span className="ml-2 text-green-400">{doneCount} done</span>}
-              {skippedCount > 0 && <span className="ml-2 text-gray-500">{skippedCount} skipped</span>}
-              {errorCount > 0 && <span className="ml-2 text-red-400">{errorCount} failed</span>}
+              {doneCount > 0 && <span className="ml-2 text-green-400">{doneCount} {ts("batchDone", locale)}</span>}
+              {skippedCount > 0 && <span className="ml-2 text-gray-500">{skippedCount} {ts("batchSkipped", locale)}</span>}
+              {errorCount > 0 && <span className="ml-2 text-red-400">{errorCount} {ts("batchFailed", locale)}</span>}
             </span>
           </div>
 
@@ -532,7 +528,6 @@ export default function BatchPage() {
             />
           </div>
 
-          {/* Task list */}
           <div className="mt-4 max-h-[400px] space-y-1 overflow-y-auto pr-1">
             {tasks.map((task) => (
               <div
@@ -566,12 +561,12 @@ export default function BatchPage() {
                 )}
 
                 <span className={CATEGORY_COLORS[task.topicCategory] + " !text-[10px] !px-1.5 !py-0.5"}>
-                  {CATEGORY_LABELS[task.topicCategory]}
+                  {catLabel(task.topicCategory, locale)}
                 </span>
                 <span className="min-w-0 truncate text-gray-300">{task.topicTitle}</span>
 
                 {task.status === "skipped" && (
-                  <span className="ml-auto shrink-0 text-gray-600">Already adapted</span>
+                  <span className="ml-auto shrink-0 text-gray-600">{ts("batchAlreadyAdapted", locale)}</span>
                 )}
                 {task.error && (
                   <span className="ml-auto shrink-0 text-red-400">{task.error}</span>

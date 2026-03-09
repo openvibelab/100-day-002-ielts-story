@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, X, CheckCircle2 } from "lucide-react";
-import { CATEGORY_LABELS, CATEGORY_COLORS, StoryCategory } from "@/lib/types";
+import { CATEGORY_COLORS, StoryCategory } from "@/lib/types";
 import { IELTSTopic } from "@/lib/types";
+import { useLang } from "@/lib/LangContext";
+import { ts, catLabel } from "@/lib/i18n";
 
 const CATEGORIES: StoryCategory[] = ["person", "event", "object", "place"];
 const SOURCE_LABELS: Record<string, string> = {
@@ -26,6 +28,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
   const [filterCat, setFilterCat] = useState<StoryCategory | "all">("all");
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { locale } = useLang();
 
   const selectedTopic = topics.find((t) => t.id === value);
 
@@ -72,12 +75,12 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
         {selectedTopic ? (
           <div className="flex min-w-0 items-center gap-2">
             <span className={CATEGORY_COLORS[selectedTopic.category] + " !text-[10px] !px-1.5 !py-0.5"}>
-              {CATEGORY_LABELS[selectedTopic.category]}
+              {catLabel(selectedTopic.category, locale)}
             </span>
             <span className="truncate text-sm text-gray-200">{selectedTopic.title}</span>
           </div>
         ) : (
-          <span className="text-sm text-gray-600">Select a topic...</span>
+          <span className="text-sm text-gray-600">{ts("topicSelect", locale)}</span>
         )}
         <div className="flex shrink-0 items-center gap-1">
           {value && (
@@ -85,7 +88,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
               role="button"
               onClick={(e) => { e.stopPropagation(); handleClear(); }}
               className="rounded p-0.5 hover:bg-dark-surface"
-              aria-label="Clear topic selection"
+              aria-label="Clear"
             >
               <X size={14} className="text-gray-500" />
             </span>
@@ -105,7 +108,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
                 ref={inputRef}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search topics..."
+                placeholder={ts("topicSearch", locale)}
                 className="w-full bg-transparent text-sm text-gray-200 outline-none placeholder:text-gray-600"
               />
             </div>
@@ -119,7 +122,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
                 filterCat === "all" ? "bg-neon-blue/10 text-neon-blue" : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              All
+              {ts("catAll", locale)}
             </button>
             {CATEGORIES.map((cat) => (
               <button
@@ -129,7 +132,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
                   filterCat === cat ? "bg-neon-blue/10 text-neon-blue" : "text-gray-500 hover:text-gray-300"
                 }`}
               >
-                {CATEGORY_LABELS[cat]}
+                {catLabel(cat, locale)}
               </button>
             ))}
           </div>
@@ -137,7 +140,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
           {/* Options */}
           <div className="max-h-[280px] overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <p className="px-3 py-4 text-center text-xs text-gray-500">No topics found</p>
+              <p className="px-3 py-4 text-center text-xs text-gray-500">{ts("topicNoResults", locale)}</p>
             ) : (
               filtered.map((t) => {
                 const isSelected = t.id === value;
@@ -153,7 +156,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
                     }`}
                   >
                     <span className={CATEGORY_COLORS[t.category] + " !text-[10px] !px-1.5 !py-0.5"}>
-                      {CATEGORY_LABELS[t.category]}
+                      {catLabel(t.category, locale)}
                     </span>
                     <span className="min-w-0 truncate">{t.title}</span>
                     {t.source && SOURCE_LABELS[t.source] && (

@@ -1,78 +1,55 @@
+"use client";
+
 import Link from "next/link";
 import { BookOpen, Brain, Network, Sparkles, Layers, FileText } from "lucide-react";
 import { ProgressSummary } from "@/components/ProgressSummary";
+import { useLang } from "@/lib/LangContext";
+import { ts, TranslationKey } from "@/lib/i18n";
 
 export default function Home() {
+  const { locale } = useLang();
+
+  const features: { icon: typeof BookOpen; titleKey: TranslationKey; descKey: TranslationKey; href: string }[] = [
+    { icon: BookOpen, titleKey: "homeWriteStories", descKey: "homeWriteStoriesDesc", href: "/stories" },
+    { icon: Brain, titleKey: "home140Topics", descKey: "home140TopicsDesc", href: "/topics" },
+    { icon: Sparkles, titleKey: "homeAIAdapt", descKey: "homeAIAdaptDesc", href: "/adapt" },
+    { icon: Layers, titleKey: "homeBatchAdapt", descKey: "homeBatchAdaptDesc", href: "/batch" },
+    { icon: Network, titleKey: "homeMindMap", descKey: "homeMindMapDesc", href: "/mind-map" },
+    { icon: FileText, titleKey: "homeCorpus", descKey: "homeCorpusDesc", href: "/corpus" },
+  ];
+
   return (
     <div className="page-container">
       <div className="mx-auto max-w-3xl py-16 text-center">
         <h1 className="text-4xl font-bold tracking-tight text-gray-100 md:text-5xl">
-          One story.<br />
-          <span className="neon-text">Every topic.</span>
+          {ts("homeTitle1", locale)}<br />
+          <span className="neon-text">{ts("homeTitle2", locale)}</span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-gray-400">
-          Write a few personal core stories, then let AI adapt them to fit any IELTS Speaking Part 2 topic. Practice smarter, not harder.
+          {ts("homeDesc", locale)}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link href="/stories" className="btn-neon-solid">
             <Sparkles size={16} />
-            Get Started
+            {ts("homeGetStarted", locale)}
           </Link>
           <Link href="/topics" className="btn-ghost">
-            Browse Topics
+            {ts("homeBrowseTopics", locale)}
           </Link>
         </div>
       </div>
 
-      {/* Progress summary (N-1) */}
       <ProgressSummary />
 
       <div className="mx-auto mt-8 grid max-w-5xl gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {[
-          {
-            icon: BookOpen,
-            title: "Write Stories",
-            desc: "Input 6-10 detailed personal stories — a trip, a friend, a meaningful object.",
-            href: "/stories",
-          },
-          {
-            icon: Brain,
-            title: "140+ Topics",
-            desc: "Browse the full IELTS Part 2 topic bank (2026 Jan-Apr), organized by category.",
-            href: "/topics",
-          },
-          {
-            icon: Sparkles,
-            title: "AI Adapt",
-            desc: "Pick a story + topic. AI rewrites your story to answer that cue card.",
-            href: "/adapt",
-          },
-          {
-            icon: Layers,
-            title: "Batch Adapt",
-            desc: "Select a story, check multiple topics, one-click batch generate your entire corpus.",
-            href: "/batch",
-          },
-          {
-            icon: Network,
-            title: "Mind Map",
-            desc: "Visualize which stories cover which topics. Find gaps at a glance.",
-            href: "/mind-map",
-          },
-          {
-            icon: FileText,
-            title: "Corpus",
-            desc: "Review all adaptations, export as text, backup as JSON, or print for offline practice.",
-            href: "/corpus",
-          },
-        ].map((item) => (
+        {features.map((item) => (
           <Link key={item.href} href={item.href} className="card-hover group">
             <item.icon
               size={24}
               className="text-neon-blue transition-all group-hover:drop-shadow-[0_0_8px_rgba(0,212,255,0.5)]"
             />
-            <h3 className="mt-3 text-sm font-semibold text-gray-200">{item.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-gray-500">{item.desc}</p>
+            <h3 className="mt-3 text-sm font-semibold text-gray-200">{ts(item.titleKey, locale)}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-gray-500">{ts(item.descKey, locale)}</p>
           </Link>
         ))}
       </div>

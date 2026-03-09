@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Sparkles, Copy, Check, Loader2, Settings, CheckCircle2 } from "lucide-react";
-import { CoreStory, CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
+import { CoreStory, CATEGORY_COLORS } from "@/lib/types";
 import { IELTS_TOPICS } from "@/data/topics";
 import { getStories, getAdaptedStory, saveAdaptedStory, getAdaptedStories, getAdaptedCountByStory, updateAdaptedContent } from "@/lib/store";
 import { hasUserApiKey, getUserApiKey, getUserProvider } from "@/lib/ai";
@@ -12,6 +12,8 @@ import { TopicCombobox } from "@/components/TopicCombobox";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { SpeakButton } from "@/components/SpeakButton";
 import { EditableContent } from "@/components/EditableContent";
+import { useLang } from "@/lib/LangContext";
+import { ts, catLabel } from "@/lib/i18n";
 
 export function AdaptContent() {
   const searchParams = useSearchParams();
@@ -28,6 +30,7 @@ export function AdaptContent() {
   const [showApiSetup, setShowApiSetup] = useState(false);
   const [showRegenConfirm, setShowRegenConfirm] = useState(false);
   const [adaptedTopicIds, setAdaptedTopicIds] = useState<Set<string>>(new Set());
+  const { locale } = useLang();
 
   useEffect(() => {
     setStories(getStories());
@@ -78,12 +81,12 @@ export function AdaptContent() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data.code === "QUOTA_EXCEEDED") {
-          setError("API quota exceeded. Configure your own API key below to continue.");
+          setError(ts("adaptQuotaError", locale));
           setShowApiSetup(true);
           return;
         }
         if (data.code === "INVALID_KEY") {
-          setError("Invalid API key. Please check your key and try again.");
+          setError(ts("adaptInvalidKey", locale));
           setShowApiSetup(true);
           return;
         }
@@ -125,18 +128,18 @@ export function AdaptContent() {
 
   return (
     <div className="page-container">
-      <h1 className="text-2xl font-bold text-gray-100">Adapt Story to Topic</h1>
+      <h1 className="text-2xl font-bold text-gray-100">{ts("adaptTitle", locale)}</h1>
       <p className="mt-2 text-sm text-gray-500">
-        Pick one of your stories and a topic. AI will rewrite your story to fit the cue card.
+        {ts("adaptDesc", locale)}
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div>
-          <p className="mb-3 text-xs font-medium text-gray-400">1. Choose a story</p>
+          <p className="mb-3 text-xs font-medium text-gray-400">{ts("adaptStep1", locale)}</p>
           {stories.length === 0 ? (
             <div className="card py-10 text-center">
-              <p className="text-sm text-gray-500">No stories yet.</p>
-              <a href="/stories" className="btn-neon mt-4 text-xs">Add a story first</a>
+              <p className="text-sm text-gray-500">{ts("adaptNoStories", locale)}</p>
+              <a href="/stories" className="btn-neon mt-4 text-xs">{ts("adaptAddFirst", locale)}</a>
             </div>
           ) : (
             <div className="space-y-2">
@@ -153,7 +156,7 @@ export function AdaptContent() {
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className={CATEGORY_COLORS[s.category]}>{CATEGORY_LABELS[s.category]}</span>
+                      <span className={CATEGORY_COLORS[s.category]}>{catLabel(s.category, locale)}</span>
                       <span className="text-sm font-medium text-gray-200">{s.title}</span>
                       {adaptedCount > 0 && (
                         <span className="ml-auto flex items-center gap-1 text-xs text-gray-500">
@@ -171,7 +174,7 @@ export function AdaptContent() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium text-gray-400">2. Choose a topic</p>
+          <p className="mb-3 text-xs font-medium text-gray-400">{ts("adaptStep2", locale)}</p>
           <TopicCombobox
             topics={IELTS_TOPICS}
             value={selectedTopic}
@@ -182,11 +185,11 @@ export function AdaptContent() {
           {topic && (
             <div className="card mt-4">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-gray-400">Cue Card</p>
+                <p className="text-xs font-medium text-gray-400">{ts("adaptCueCard", locale)}</p>
                 {selectedStory && getAdaptedStory(selectedStory, selectedTopic) && (
                   <span className="flex items-center gap-1 text-xs text-green-400">
                     <CheckCircle2 size={12} />
-                    Already adapted
+                    {ts("adaptAlreadyAdapted", locale)}
                   </span>
                 )}
               </div>
@@ -201,17 +204,17 @@ export function AdaptContent() {
           className="btn-neon-solid"
           disabled={!selectedStory || !selectedTopic || loading}
           onClick={handleGenerate}
-          title={!selectedStory || !selectedTopic ? "Select a story and topic to continue" : undefined}
+          title={!selectedStory || !selectedTopic ? ts("adaptSelectHint", locale) : undefined}
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-          {loading ? "Generating..." : result ? "Regenerate" : "Adapt Story"}
+          {loading ? ts("adaptGenerating", locale) : result ? ts("adaptRegenerate", locale) : ts("adaptGenerate", locale)}
         </button>
         <button
           className="btn-ghost text-xs"
           onClick={() => setShowApiSetup(!showApiSetup)}
         >
           <Settings size={14} />
-          API Key
+          {ts("adaptApiKey", locale)}
         </button>
         <ApiKeyBadge />
         {error && <p className="text-sm text-red-400">{error}</p>}
@@ -223,12 +226,12 @@ export function AdaptContent() {
         <div className="mt-8 space-y-5">
           <div className="card">
             <div className="flex items-center justify-between gap-3">
-              <h3 className="text-sm font-semibold text-gray-200">Adapted Response</h3>
+              <h3 className="text-sm font-semibold text-gray-200">{ts("adaptResult", locale)}</h3>
               <div className="flex gap-1.5">
                 <SpeakButton text={result.adapted_content} />
-                <button onClick={handleCopy} className="btn-ghost !px-2 !py-1 text-xs" aria-label="Copy adapted response">
+                <button onClick={handleCopy} className="btn-ghost !px-2 !py-1 text-xs" aria-label={ts("copy", locale)}>
                   {copied ? <Check size={12} className="text-neon-green" /> : <Copy size={12} />}
-                  {copied ? "Copied" : "Copy"}
+                  {copied ? ts("copied", locale) : ts("copy", locale)}
                 </button>
               </div>
             </div>
@@ -244,13 +247,13 @@ export function AdaptContent() {
               className="mt-4"
             />
             <p className="mt-3 text-xs text-gray-600">
-              {result.adapted_content.split(/\s+/).length} words
+              {result.adapted_content.split(/\s+/).length} {ts("words", locale)}
             </p>
           </div>
 
           {result.tips && (
             <div className="card">
-              <h3 className="text-sm font-semibold text-gray-200">Speaking Tips</h3>
+              <h3 className="text-sm font-semibold text-gray-200">{ts("adaptTips", locale)}</h3>
               <p className="mt-3 whitespace-pre-line text-sm leading-7 text-gray-400">{result.tips}</p>
             </div>
           )}
@@ -259,9 +262,9 @@ export function AdaptContent() {
 
       <ConfirmDialog
         open={showRegenConfirm}
-        title="Regenerate Adaptation"
-        message="This will replace the existing adapted response. The current version will be lost."
-        confirmLabel="Regenerate"
+        title={ts("adaptRegenTitle", locale)}
+        message={ts("adaptRegenMsg", locale)}
+        confirmLabel={ts("adaptRegenerate", locale)}
         onConfirm={() => { setShowRegenConfirm(false); doGenerate(); }}
         onCancel={() => setShowRegenConfirm(false)}
       />

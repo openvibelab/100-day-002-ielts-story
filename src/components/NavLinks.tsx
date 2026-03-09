@@ -5,20 +5,23 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { getStories, getAdaptedStories } from "@/lib/store";
+import { useLang } from "@/lib/LangContext";
+import { ts, TranslationKey } from "@/lib/i18n";
 
-const links = [
-  { href: "/stories", label: "Stories" },
-  { href: "/topics", label: "Topics" },
-  { href: "/adapt", label: "Adapt" },
-  { href: "/batch", label: "Batch" },
-  { href: "/mind-map", label: "Mind Map" },
-  { href: "/corpus", label: "Corpus" },
+const links: { href: string; labelKey: TranslationKey }[] = [
+  { href: "/stories", labelKey: "navStories" },
+  { href: "/topics", labelKey: "navTopics" },
+  { href: "/adapt", labelKey: "navAdapt" },
+  { href: "/batch", labelKey: "navBatch" },
+  { href: "/mind-map", labelKey: "navMindMap" },
+  { href: "/corpus", labelKey: "navCorpus" },
 ];
 
 export function NavLinks() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [counts, setCounts] = useState({ stories: 0, adapted: 0 });
+  const { locale } = useLang();
 
   useEffect(() => {
     setCounts({
@@ -55,7 +58,7 @@ export function NavLinks() {
                   : "text-gray-400 hover:bg-dark-card hover:text-gray-200"
               }`}
             >
-              {link.label}
+              {ts(link.labelKey, locale)}
               {badge && (
                 <span className="ml-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-dark-surface px-1 text-[10px] text-gray-500">
                   {badge}
@@ -92,7 +95,7 @@ export function NavLinks() {
                       : "text-gray-300 hover:bg-dark-card"
                   }`}
                 >
-                  <span>{link.label}</span>
+                  <span>{ts(link.labelKey, locale)}</span>
                   {badge && (
                     <span className="rounded-full bg-dark-surface px-2 py-0.5 text-xs text-gray-500">
                       {badge}

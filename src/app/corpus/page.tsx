@@ -13,7 +13,7 @@ import {
   Clock,
   BookOpen,
 } from "lucide-react";
-import { CoreStory, AdaptedStory, CATEGORY_LABELS, CATEGORY_COLORS, StoryCategory } from "@/lib/types";
+import { CoreStory, AdaptedStory, CATEGORY_COLORS, StoryCategory } from "@/lib/types";
 import {
   getStories,
   getAdaptedStories,
@@ -27,6 +27,8 @@ import Link from "next/link";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { SpeakButton } from "@/components/SpeakButton";
 import { EditableContent } from "@/components/EditableContent";
+import { useLang } from "@/lib/LangContext";
+import { ts, t, catLabel } from "@/lib/i18n";
 
 type ViewMode = "by-story" | "timeline";
 
@@ -63,12 +65,12 @@ export default function CorpusPage() {
   const [loading, setLoading] = useState(true);
   const [importResult, setImportResult] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { locale } = useLang();
 
   function loadData() {
     const stories = getStories();
     const adapted = getAdaptedStories();
 
-    // By-story view
     const result: StoryCorpus[] = stories
       .map((story) => {
         const storyAdapted = adapted.filter((a) => a.story_id === story.id);
@@ -97,7 +99,6 @@ export default function CorpusPage() {
     setCorpus(result);
     setExpandedStories(new Set(result.map((s) => s.story.id)));
 
-    // Timeline view
     const enriched: TimelineRecord[] = adapted
       .map((a) => {
         const story = stories.find((s) => s.id === a.story_id);
@@ -144,7 +145,7 @@ export default function CorpusPage() {
 
   function formatDate(iso: string): string {
     const d = new Date(iso);
-    return d.toLocaleDateString("en-US", {
+    return d.toLocaleDateString(locale === "zh" ? "zh-CN" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -170,22 +171,22 @@ export default function CorpusPage() {
 
     corpus.forEach((s, si) => {
       lines.push("=".repeat(50));
-      lines.push(`STORY ${si + 1}: ${s.story.title} [${CATEGORY_LABELS[s.story.category]}]`);
+      lines.push(`STORY ${si + 1}: ${s.story.title} [${catLabel(s.story.category, locale)}]`);
       lines.push("=".repeat(50));
       lines.push("");
-      lines.push("Original Story:");
+      lines.push(locale === "zh" ? "原始故事:" : "Original Story:");
       lines.push(s.story.content);
       lines.push("");
 
       s.adaptations.forEach((a, ai) => {
         lines.push("-".repeat(40));
-        lines.push(`  Topic ${ai + 1}: ${a.topicTitle} [${CATEGORY_LABELS[a.topicCategory]}]`);
+        lines.push(`  Topic ${ai + 1}: ${a.topicTitle} [${catLabel(a.topicCategory, locale)}]`);
         lines.push("-".repeat(40));
         lines.push("");
         lines.push("Cue Card:");
         lines.push(a.cueCard);
         lines.push("");
-        lines.push("Adapted Response:");
+        lines.push(locale === "zh" ? "适配结果:" : "Adapted Response:");
         lines.push(a.adaptedContent);
         if (a.tips) {
           lines.push("");
@@ -197,7 +198,6 @@ export default function CorpusPage() {
       lines.push("");
     });
 
-    // Add BOM for Windows compatibility (M-10)
     const bom = "\uFEFF";
     const blob = new Blob([bom + lines.join("\n")], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -233,20 +233,28 @@ export default function CorpusPage() {
         const text = (reader.result as string).replace(/^\uFEFF/, "");
         const data = JSON.parse(text);
         if (!data.stories || !data.adapted_stories) {
-          setImportResult("Invalid file format");
+          setImportResult(locale === "zh" ? "文件格式无效" : "Invalid file format");
           return;
         }
         const result = importAllData(data);
-        setImportResult(`Imported ${result.stories} stories and ${result.adapted} adaptations`);
+        setImportResult(
+          locale === "zh"
+            ? `已导入 ${result.stories} 个故事和 ${result.adapted} 条适配`
+            : `Imported ${result.stories} stories and ${result.adapted} adaptations`
+        );
         loadData();
       } catch {
-        setImportResult("Failed to parse file");
+        setImportResult(locale === "zh" ? "文件解析失败" : "Failed to parse file");
       }
       setTimeout(() => setImportResult(null), 3000);
     };
     reader.readAsText(file);
     e.target.value = "";
   }
+
+  const deleteMsg = deleteTarget
+    ? (t("corpusDeleteMsg", locale) as (title: string) => string)(deleteTarget.title)
+    : "";
 
   if (loading) {
     return (
@@ -265,19 +273,19 @@ export default function CorpusPage() {
       <div className="page-container no-print">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-100">My Corpus</h1>
+            <h1 className="text-2xl font-bold text-gray-100">{ts("corpusTitle", locale)}</h1>
             <p className="mt-2 text-sm text-gray-500">
-              {corpus.length} stories · {totalAdaptations} adaptations
+              {corpus.length} {ts("corpusStories", locale)} · {totalAdaptations} {ts("corpusAdaptations", locale)}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={handleExportJSON} className="btn-ghost text-xs" aria-label="Export backup as JSON">
+            <button onClick={handleExportJSON} className="btn-ghost text-xs" aria-label="Export JSON">
               <Download size={14} />
-              Backup .json
+              {ts("corpusBackup", locale)}
             </button>
-            <button onClick={() => fileInputRef.current?.click()} className="btn-ghost text-xs" aria-label="Import backup from JSON">
+            <button onClick={() => fileInputRef.current?.click()} className="btn-ghost text-xs" aria-label="Import JSON">
               <Upload size={14} />
-              Import
+              {ts("corpusImport", locale)}
             </button>
             <input
               ref={fileInputRef}
@@ -286,13 +294,13 @@ export default function CorpusPage() {
               onChange={handleImportJSON}
               className="hidden"
             />
-            <button onClick={handleExportText} className="btn-ghost text-xs" aria-label="Download as text file">
+            <button onClick={handleExportText} className="btn-ghost text-xs" aria-label="Download .txt">
               <Download size={14} />
-              Download .txt
+              {ts("corpusDownload", locale)}
             </button>
-            <button onClick={handlePrint} className="btn-neon text-xs" aria-label="Print corpus">
+            <button onClick={handlePrint} className="btn-neon text-xs" aria-label="Print">
               <Printer size={14} />
-              Print
+              {ts("corpusPrint", locale)}
             </button>
           </div>
         </div>
@@ -305,18 +313,17 @@ export default function CorpusPage() {
 
         {totalAdaptations === 0 ? (
           <div className="card mt-8 py-16 text-center">
-            <p className="text-lg font-semibold text-gray-300">No adaptations yet</p>
+            <p className="text-lg font-semibold text-gray-300">{ts("corpusNoAdaptations", locale)}</p>
             <p className="mt-2 text-sm text-gray-500">
-              Use Adapt or Batch Adapt to generate your first adaptation.
+              {ts("corpusNoAdaptationsDesc", locale)}
             </p>
             <div className="mt-6 flex justify-center gap-3">
-              <Link href="/adapt" className="btn-neon text-xs">Single Adapt</Link>
-              <Link href="/batch" className="btn-neon text-xs">Batch Adapt</Link>
+              <Link href="/adapt" className="btn-neon text-xs">{ts("corpusSingleAdapt", locale)}</Link>
+              <Link href="/batch" className="btn-neon text-xs">{ts("corpusBatchAdapt", locale)}</Link>
             </div>
           </div>
         ) : (
           <>
-            {/* View mode toggle (M-2) */}
             <div className="mt-4 flex items-center gap-2">
               <button
                 onClick={() => setViewMode("by-story")}
@@ -327,7 +334,7 @@ export default function CorpusPage() {
                 }`}
               >
                 <BookOpen size={12} />
-                By Story
+                {ts("corpusByStory", locale)}
               </button>
               <button
                 onClick={() => setViewMode("timeline")}
@@ -338,7 +345,7 @@ export default function CorpusPage() {
                 }`}
               >
                 <Clock size={12} />
-                Timeline
+                {ts("corpusTimeline", locale)}
               </button>
             </div>
 
@@ -355,13 +362,13 @@ export default function CorpusPage() {
                       >
                         <div className="flex items-center gap-2">
                           <span className={`tag-${s.story.category}`}>
-                            {CATEGORY_LABELS[s.story.category]}
+                            {catLabel(s.story.category, locale)}
                           </span>
                           <h2 className="text-base font-semibold text-gray-200">
                             {s.story.title}
                           </h2>
                           <span className="text-xs text-gray-500">
-                            {s.adaptations.length} topics
+                            {s.adaptations.length} {ts("progressTopics", locale)}
                           </span>
                         </div>
                         {isExpanded ? (
@@ -374,7 +381,7 @@ export default function CorpusPage() {
                       {isExpanded && (
                         <div className="mt-4 space-y-4">
                           <div className="rounded-lg border border-dark-border bg-dark-surface p-4">
-                            <p className="text-xs font-medium text-gray-500">Original Story</p>
+                            <p className="text-xs font-medium text-gray-500">{ts("corpusOriginalStory", locale)}</p>
                             <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-400">
                               {s.story.content}
                             </p>
@@ -388,7 +395,7 @@ export default function CorpusPage() {
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs font-bold text-gray-600">#{i + 1}</span>
                                     <span className={`tag-${a.topicCategory}`}>
-                                      {CATEGORY_LABELS[a.topicCategory]}
+                                      {catLabel(a.topicCategory, locale)}
                                     </span>
                                     <span className="text-sm font-medium text-gray-200">{a.topicTitle}</span>
                                   </div>
@@ -397,14 +404,14 @@ export default function CorpusPage() {
                                     <button
                                       onClick={() => handleCopy(a.id, a.adaptedContent)}
                                       className="btn-ghost !px-2 !py-1 text-xs"
-                                      aria-label={`Copy adaptation for ${a.topicTitle}`}
+                                      aria-label={ts("copy", locale)}
                                     >
                                       {isCopied ? <Check size={12} className="text-neon-green" /> : <Copy size={12} />}
                                     </button>
                                     <button
                                       onClick={() => setDeleteTarget({ id: a.id, title: a.topicTitle })}
                                       className="rounded p-1 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
-                                      aria-label={`Delete adaptation for ${a.topicTitle}`}
+                                      aria-label={ts("delete", locale)}
                                     >
                                       <Trash2 size={12} />
                                     </button>
@@ -412,7 +419,7 @@ export default function CorpusPage() {
                                 </div>
                                 <details className="mt-2">
                                   <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
-                                    Cue Card
+                                    {ts("corpusCueCard", locale)}
                                   </summary>
                                   <p className="mt-1 whitespace-pre-line text-xs leading-6 text-gray-500">
                                     {a.cueCard}
@@ -429,7 +436,7 @@ export default function CorpusPage() {
                                 {a.tips && (
                                   <details className="mt-2">
                                     <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
-                                      Speaking Tips
+                                      {ts("corpusSpeakingTips", locale)}
                                     </summary>
                                     <p className="mt-1 whitespace-pre-line text-xs leading-6 text-gray-400">
                                       {a.tips}
@@ -464,16 +471,16 @@ export default function CorpusPage() {
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className={CATEGORY_COLORS[r.topicCategory]}>
-                              {CATEGORY_LABELS[r.topicCategory]}
+                              {catLabel(r.topicCategory, locale)}
                             </span>
                             <span className="text-sm font-medium text-gray-200">
                               {r.topicTitle}
                             </span>
                           </div>
                           <div className="mt-1.5 flex items-center gap-2 text-xs text-gray-500">
-                            <span>from: {r.storyTitle}</span>
+                            <span>{locale === "zh" ? "来自" : "from"}: {r.storyTitle}</span>
                             <span>·</span>
-                            <span>{wordCount} words</span>
+                            <span>{wordCount} {ts("words", locale)}</span>
                             <span>·</span>
                             <span>{formatDate(r.adapted.created_at)}</span>
                           </div>
@@ -490,25 +497,25 @@ export default function CorpusPage() {
                       {isExpanded && (
                         <div className="mt-4 border-t border-dark-border pt-4">
                           <div className="flex items-center justify-between gap-3">
-                            <h4 className="text-xs font-medium text-gray-400">Adapted Response</h4>
+                            <h4 className="text-xs font-medium text-gray-400">{ts("adaptResult", locale)}</h4>
                             <div className="flex gap-1">
                               <SpeakButton text={r.adapted.adapted_content} />
                               <button
                                 onClick={() => handleCopy(r.adapted.id, r.adapted.adapted_content)}
                                 className="btn-ghost !px-2 !py-1 text-xs"
-                                aria-label="Copy adapted response"
+                                aria-label={ts("copy", locale)}
                               >
                                 {isCopied ? (
                                   <Check size={14} className="text-neon-green" />
                                 ) : (
                                   <Copy size={14} />
                                 )}
-                                {isCopied ? "Copied" : "Copy"}
+                                {isCopied ? ts("copied", locale) : ts("copy", locale)}
                               </button>
                               <button
                                 onClick={() => setDeleteTarget({ id: r.adapted.id, title: r.topicTitle })}
                                 className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
-                                aria-label="Delete this adaptation"
+                                aria-label={ts("delete", locale)}
                               >
                                 <Trash2 size={14} />
                               </button>
@@ -525,7 +532,7 @@ export default function CorpusPage() {
 
                           {r.adapted.tips && (
                             <div className="mt-4 border-t border-dark-border pt-4">
-                              <h4 className="text-xs font-medium text-gray-400">Speaking Tips</h4>
+                              <h4 className="text-xs font-medium text-gray-400">{ts("corpusSpeakingTips", locale)}</h4>
                               <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-400">
                                 {r.adapted.tips}
                               </p>
@@ -537,7 +544,7 @@ export default function CorpusPage() {
                               href={`/adapt?topic=${r.adapted.topic_id}`}
                               className="btn-neon text-xs"
                             >
-                              Regenerate
+                              {ts("adaptRegenerate", locale)}
                             </Link>
                           </div>
                         </div>
@@ -564,11 +571,11 @@ export default function CorpusPage() {
             <div key={s.story.id} className="print-story">
               <h2>
                 {s.story.title}{" "}
-                <span className="print-cat">[{CATEGORY_LABELS[s.story.category]}]</span>
+                <span className="print-cat">[{catLabel(s.story.category, locale)}]</span>
               </h2>
 
               <div className="print-original">
-                <h3>Original Story</h3>
+                <h3>{ts("corpusOriginalStory", locale)}</h3>
                 <p>{s.story.content}</p>
               </div>
 
@@ -576,7 +583,7 @@ export default function CorpusPage() {
                 <div key={a.topicId} className="print-adaptation">
                   <h3>
                     #{i + 1} {a.topicTitle}{" "}
-                    <span className="print-cat">[{CATEGORY_LABELS[a.topicCategory]}]</span>
+                    <span className="print-cat">[{catLabel(a.topicCategory, locale)}]</span>
                   </h3>
                   <div className="print-cuecard">
                     <strong>Cue Card:</strong>
@@ -601,9 +608,9 @@ export default function CorpusPage() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Delete Adaptation"
-        message={deleteTarget ? `Delete the adaptation for "${deleteTarget.title}"?` : ""}
-        confirmLabel="Delete"
+        title={ts("corpusDeleteTitle", locale)}
+        message={deleteMsg}
+        confirmLabel={ts("delete", locale)}
         danger
         onConfirm={() => deleteTarget && handleDelete(deleteTarget.id)}
         onCancel={() => setDeleteTarget(null)}

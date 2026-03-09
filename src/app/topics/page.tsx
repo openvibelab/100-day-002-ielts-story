@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, CheckCircle2, Sparkles } from "lucide-react";
-import { CoreStory, StoryCategory, CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
+import { CoreStory, StoryCategory, CATEGORY_COLORS } from "@/lib/types";
 import { IELTS_TOPICS } from "@/data/topics";
 import { getAdaptedCountByTopic, getStories } from "@/lib/store";
 import Link from "next/link";
+import { useLang } from "@/lib/LangContext";
+import { ts, catLabel } from "@/lib/i18n";
 
 const CATEGORIES: StoryCategory[] = ["person", "event", "object", "place"];
 
@@ -22,6 +24,7 @@ export default function TopicsPage() {
   const [adaptedCounts, setAdaptedCounts] = useState<Record<string, number>>({});
   const [stories, setStories] = useState<CoreStory[]>([]);
   const [loading, setLoading] = useState(true);
+  const { locale } = useLang();
 
   useEffect(() => {
     const counts: Record<string, number> = {};
@@ -52,14 +55,14 @@ export default function TopicsPage() {
     <div className="page-container">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-100">IELTS Speaking Topics</h1>
+          <h1 className="text-2xl font-bold text-gray-100">{ts("topicsTitle", locale)}</h1>
           <p className="mt-2 text-sm text-gray-500">
-            {IELTS_TOPICS.length} topics · {totalAdapted} covered ({Math.round((totalAdapted / IELTS_TOPICS.length) * 100)}%)
+            {IELTS_TOPICS.length} {ts("progressTopics", locale)} · {totalAdapted} {ts("topicsCovered", locale)} ({Math.round((totalAdapted / IELTS_TOPICS.length) * 100)}%)
           </p>
         </div>
       </div>
 
-      {/* Progress bar (N-1) */}
+      {/* Progress bar */}
       <div className="mt-4 h-2 overflow-hidden rounded-full bg-dark-surface">
         <div
           className="h-full rounded-full bg-neon-blue transition-all duration-500"
@@ -79,7 +82,7 @@ export default function TopicsPage() {
               : "border-dark-border text-gray-500 hover:text-gray-300"
           }`}
         >
-          All ({IELTS_TOPICS.length})
+          {ts("catAll", locale)} ({IELTS_TOPICS.length})
         </button>
         {CATEGORIES.map((cat) => {
           const count = IELTS_TOPICS.filter((t) => t.category === cat).length;
@@ -93,7 +96,7 @@ export default function TopicsPage() {
                   : "border-dark-border text-gray-500 hover:text-gray-300"
               }`}
             >
-              {CATEGORY_LABELS[cat]} ({count})
+              {catLabel(cat, locale)} ({count})
             </button>
           );
         })}
@@ -113,7 +116,7 @@ export default function TopicsPage() {
               >
                 <div className="flex min-w-0 items-center gap-2">
                   {hasAdapted && <CheckCircle2 size={16} className="shrink-0 text-neon-green" />}
-                  <span className={CATEGORY_COLORS[topic.category]}>{CATEGORY_LABELS[topic.category]}</span>
+                  <span className={CATEGORY_COLORS[topic.category]}>{catLabel(topic.category, locale)}</span>
                   <span className="min-w-0 truncate text-sm font-medium text-gray-200">{topic.title}</span>
                   {sourceInfo && (
                     <span className={sourceInfo.className}>{sourceInfo.label}</span>
@@ -126,10 +129,9 @@ export default function TopicsPage() {
                 <div className="mt-4 border-t border-dark-border pt-4">
                   <p className="whitespace-pre-line text-sm leading-relaxed text-gray-400">{topic.cue_card}</p>
 
-                  {/* Inline story selection (M-7) */}
                   {stories.length > 0 ? (
                     <div className="mt-4">
-                      <p className="mb-2 text-xs font-medium text-gray-500">Quick adapt with:</p>
+                      <p className="mb-2 text-xs font-medium text-gray-500">{ts("topicsQuickAdapt", locale)}</p>
                       <div className="flex flex-wrap gap-2">
                         {stories.map((s) => (
                           <Link
@@ -146,7 +148,7 @@ export default function TopicsPage() {
                   ) : (
                     <div className="mt-4">
                       <Link href="/stories" className="btn-neon text-xs">
-                        Add a story first
+                        {ts("topicsAddStoryFirst", locale)}
                       </Link>
                     </div>
                   )}

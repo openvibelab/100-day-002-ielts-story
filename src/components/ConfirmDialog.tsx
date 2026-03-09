@@ -1,6 +1,8 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
+import { useLang } from "@/lib/LangContext";
+import { ts } from "@/lib/i18n";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -16,11 +18,13 @@ export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = "Confirm",
+  confirmLabel,
   danger = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const { locale } = useLang();
+
   if (!open) return null;
 
   return (
@@ -41,7 +45,7 @@ export function ConfirmDialog({
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <button onClick={onCancel} className="btn-ghost text-xs">
-            Cancel
+            {ts("cancel", locale)}
           </button>
           <button
             onClick={onConfirm}
@@ -51,7 +55,7 @@ export function ConfirmDialog({
                 : "bg-neon-blue text-black hover:shadow-[0_0_15px_rgba(0,212,255,0.4)]"
             }`}
           >
-            {confirmLabel}
+            {confirmLabel || ts("confirm", locale)}
           </button>
         </div>
       </div>

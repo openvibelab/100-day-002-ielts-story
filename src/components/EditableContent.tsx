@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Edit3, Save, X } from "lucide-react";
+import { useLang } from "@/lib/LangContext";
+import { ts } from "@/lib/i18n";
 
 interface EditableContentProps {
   content: string;
@@ -12,6 +14,7 @@ interface EditableContentProps {
 export function EditableContent({ content, onSave, className = "" }: EditableContentProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
+  const { locale } = useLang();
 
   function handleEdit() {
     setDraft(content);
@@ -43,11 +46,11 @@ export function EditableContent({ content, onSave, className = "" }: EditableCon
         <div className="mt-2 flex gap-2">
           <button onClick={handleSave} className="btn-neon text-xs" disabled={!draft.trim()}>
             <Save size={12} />
-            Save
+            {ts("save", locale)}
           </button>
           <button onClick={handleCancel} className="btn-ghost text-xs">
             <X size={12} />
-            Cancel
+            {ts("cancel", locale)}
           </button>
         </div>
       </div>
@@ -62,8 +65,8 @@ export function EditableContent({ content, onSave, className = "" }: EditableCon
       <button
         onClick={handleEdit}
         className="absolute -right-1 -top-1 rounded-lg p-1.5 text-gray-600 opacity-0 transition-all hover:bg-dark-surface hover:text-gray-300 group-hover:opacity-100"
-        aria-label="Edit adapted content"
-        title="Edit"
+        aria-label={ts("edit", locale)}
+        title={ts("edit", locale)}
       >
         <Edit3 size={12} />
       </button>
