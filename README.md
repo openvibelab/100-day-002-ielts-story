@@ -93,7 +93,7 @@ MIT
 
 ---
 
-<details id="中文版本">
+<details id="中文版本" open>
 <summary><h2>🇨🇳 中文版本</h2></summary>
 
 # 雅思故事适配器
