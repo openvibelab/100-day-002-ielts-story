@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { NavLinks } from "@/components/NavLinks";
 
@@ -41,6 +42,7 @@ export default function RootLayout({
           </a>{" "}
           · Day 002
         </footer>
+        <Analytics />
       </body>
     </html>
   );

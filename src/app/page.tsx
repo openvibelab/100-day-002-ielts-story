@@ -33,8 +33,8 @@ export default function Home() {
           },
           {
             icon: Brain,
-            title: "50 Topics",
-            desc: "Browse the current IELTS Part 2 topic bank, organized by category.",
+            title: "140+ Topics",
+            desc: "Browse the full IELTS Part 2 topic bank (2026 Jan-Apr), organized by category.",
             href: "/topics",
           },
           {

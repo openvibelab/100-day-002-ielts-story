@@ -13,6 +13,7 @@ export interface IELTSTopic {
   title: string;
   category: StoryCategory;
   cue_card: string;
+  source?: string;
 }
 
 export interface AdaptedStory {

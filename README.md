@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IELTS Story Adapter
 
-## Getting Started
+Write personal stories once, AI adapts them to any IELTS Speaking Part 2 topic.
 
-First, run the development server:
+Part of the [OpenVibeLab](https://openvibelab.com) 100-day vibe coding challenge -- Day 002.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 + TypeScript
+- **Styling**: Tailwind CSS
+- **Visualization**: React Flow (mind map)
+- **AI**: Gemini 2.5 Flash (primary)
+
+## Features
+
+- Core story management -- write once, reuse everywhere
+- 140+ IELTS Speaking Part 2 topics database
+- AI-powered story adaptation to match any topic
+- Mind map visualization of story-topic connections
+- Multi-provider support (Gemini / DeepSeek / OpenAI)
+- User custom API key support (stored in localStorage)
+
+## Quick Start
 
 ```bash
+git clone https://github.com/openvibelab/100-day-002-ielts-story.git
+cd 100-day-002-ielts-story
+npm install
+cp .env.example .env.local
+# Add your API key to .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `GEMINI_API_KEY` | Yes | -- | Google Gemini API key |
+| `GEMINI_MODEL` | No | `gemini-2.5-flash` | Model to use |
 
-## Learn More
+## Deploy
 
-To learn more about Next.js, take a look at the following resources:
+**Vercel (recommended):**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/openvibelab/100-day-002-ielts-story)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Or manually: connect your GitHub repo in the Vercel dashboard, set environment variables, and deploy.
 
-## Deploy on Vercel
+## Links
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [OpenVibeLab](https://openvibelab.com) -- main site
+- [Day 001: AI Judge](https://github.com/openvibelab/100-day-001-ai-judge)
+- [GitHub Org](https://github.com/openvibelab)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT
