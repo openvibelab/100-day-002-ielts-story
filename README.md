@@ -1,3 +1,5 @@
+[![中文版本](https://img.shields.io/badge/🇨🇳_中文版本-点击查看-blue?style=for-the-badge)](#中文版本)
+
 # IELTS Story Adapter
 
 Write one personal story, and AI adapts it to fit any IELTS Speaking Part 2 topic.
@@ -91,8 +93,8 @@ MIT
 
 ---
 
-<details>
-<summary>🇨🇳 中文版本</summary>
+<details id="中文版本">
+<summary><h2>🇨🇳 中文版本</h2></summary>
 
 # 雅思故事适配器
 
