@@ -58,7 +58,7 @@ async function callGemini(apiKey: string, model: string, systemPrompt: string, u
     console.error("Gemini error:", status, detail);
     if (status === 429) throw { code: "QUOTA_EXCEEDED", message: "Gemini quota exceeded" };
     if (status === 401 || status === 403) throw { code: "INVALID_KEY", message: "Invalid Gemini API key" };
-    throw new Error(`Gemini error: ${status}`);
+    throw new Error(`Gemini error ${status}: ${detail.slice(0, 200)}`);
   }
 
   const data = await res.json();
@@ -256,7 +256,7 @@ export async function POST(req: NextRequest) {
     }
 
     // All providers failed
-    const error = lastError as { code?: string } | undefined;
+    const error = lastError as { code?: string; message?: string } | undefined;
     if (error?.code === "QUOTA_EXCEEDED") {
       return NextResponse.json(
         { error: "All API quotas exceeded. Please configure your own API key.", code: "QUOTA_EXCEEDED" },
@@ -264,9 +264,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ error: "AI service error" }, { status: 502 });
+    const errorMsg = error?.message || String(lastError) || "Unknown error";
+    console.error("All providers failed. Last error:", errorMsg);
+    return NextResponse.json({ error: `AI service error: ${errorMsg}` }, { status: 502 });
   } catch (error) {
     console.error("Generate error:", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({ error: `Server error: ${error instanceof Error ? error.message : String(error)}` }, { status: 500 });
   }
 }
