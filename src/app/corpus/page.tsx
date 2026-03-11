@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Printer,
   Download,
@@ -30,7 +30,7 @@ import { EditableContent } from "@/components/EditableContent";
 import { useLang } from "@/lib/LangContext";
 import { ts, t, catLabel } from "@/lib/i18n";
 
-type ViewMode = "by-story" | "timeline";
+type ViewMode = "by-story" | "by-topic" | "timeline";
 
 interface StoryCorpus {
   story: CoreStory;
@@ -54,10 +54,27 @@ interface TimelineRecord {
   topicCategory: StoryCategory;
 }
 
+interface TopicCorpus {
+  topicId: string;
+  topicTitle: string;
+  topicCategory: StoryCategory;
+  cueCard: string;
+  items: {
+    id: string;
+    storyId: string;
+    storyTitle: string;
+    storyCategory: StoryCategory;
+    adaptedContent: string;
+    tips: string;
+    createdAt: string;
+  }[];
+}
+
 export default function CorpusPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("by-story");
   const [corpus, setCorpus] = useState<StoryCorpus[]>([]);
   const [timeline, setTimeline] = useState<TimelineRecord[]>([]);
+  const [selectedStoryId, setSelectedStoryId] = useState<string>("all");
   const [expandedStories, setExpandedStories] = useState<Set<string>>(new Set());
   const [expandedTimeline, setExpandedTimeline] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -98,6 +115,11 @@ export default function CorpusPage() {
 
     setCorpus(result);
     setExpandedStories(new Set(result.map((s) => s.story.id)));
+    setSelectedStoryId((prev) => (
+      prev === "all" || result.some((item) => item.story.id === prev)
+        ? prev
+        : "all"
+    ));
 
     const enriched: TimelineRecord[] = adapted
       .map((a) => {
@@ -155,6 +177,53 @@ export default function CorpusPage() {
   }
 
   const totalAdaptations = corpus.reduce((sum, s) => sum + s.adaptations.length, 0);
+  const visibleCorpus =
+    selectedStoryId === "all" ? corpus : corpus.filter((item) => item.story.id === selectedStoryId);
+  const visibleTimeline =
+    selectedStoryId === "all"
+      ? timeline
+      : timeline.filter((item) => item.adapted.story_id === selectedStoryId);
+  const topicCorpus = useMemo<TopicCorpus[]>(() => {
+    const groups = new Map<string, TopicCorpus>();
+
+    for (const storyCorpus of visibleCorpus) {
+      for (const adaptation of storyCorpus.adaptations) {
+        const existing = groups.get(adaptation.topicId);
+        if (existing) {
+          existing.items.push({
+            id: adaptation.id,
+            storyId: storyCorpus.story.id,
+            storyTitle: storyCorpus.story.title,
+            storyCategory: storyCorpus.story.category,
+            adaptedContent: adaptation.adaptedContent,
+            tips: adaptation.tips,
+            createdAt: adaptation.createdAt,
+          });
+          continue;
+        }
+
+        groups.set(adaptation.topicId, {
+          topicId: adaptation.topicId,
+          topicTitle: adaptation.topicTitle,
+          topicCategory: adaptation.topicCategory,
+          cueCard: adaptation.cueCard,
+          items: [
+            {
+              id: adaptation.id,
+              storyId: storyCorpus.story.id,
+              storyTitle: storyCorpus.story.title,
+              storyCategory: storyCorpus.story.category,
+              adaptedContent: adaptation.adaptedContent,
+              tips: adaptation.tips,
+              createdAt: adaptation.createdAt,
+            },
+          ],
+        });
+      }
+    }
+
+    return Array.from(groups.values()).sort((a, b) => a.topicTitle.localeCompare(b.topicTitle));
+  }, [visibleCorpus]);
 
   function handlePrint() {
     window.print();
@@ -347,12 +416,50 @@ export default function CorpusPage() {
                 <Clock size={12} />
                 {ts("corpusTimeline", locale)}
               </button>
+              <button
+                onClick={() => setViewMode("by-topic")}
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                  viewMode === "by-topic"
+                    ? "bg-neon-blue/10 text-neon-blue"
+                    : "text-gray-500 hover:text-gray-300"
+                }`}
+              >
+                {locale === "zh" ? "按题目看" : "By Topic"}
+              </button>
             </div>
+
+            {corpus.length > 0 && (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => setSelectedStoryId("all")}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    selectedStoryId === "all"
+                      ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
+                      : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                  }`}
+                >
+                  {locale === "zh" ? "全部故事" : "All stories"}
+                </button>
+                {corpus.map((item) => (
+                  <button
+                    key={item.story.id}
+                    onClick={() => setSelectedStoryId(item.story.id)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                      selectedStoryId === item.story.id
+                        ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
+                        : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                    }`}
+                  >
+                    {item.story.title}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* By-story view */}
             {viewMode === "by-story" && (
               <div className="mt-4 space-y-6">
-                {corpus.map((s) => {
+                {visibleCorpus.map((s) => {
                   const isExpanded = expandedStories.has(s.story.id);
                   return (
                     <div key={s.story.id} className="card">
@@ -457,7 +564,7 @@ export default function CorpusPage() {
             {/* Timeline view */}
             {viewMode === "timeline" && (
               <div className="mt-4 space-y-3">
-                {timeline.map((r) => {
+                {visibleTimeline.map((r) => {
                   const isExpanded = expandedTimeline === r.adapted.id;
                   const isCopied = copiedId === r.adapted.id;
                   const wordCount = r.adapted.adapted_content.split(/\s+/).length;
@@ -552,6 +659,106 @@ export default function CorpusPage() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* By-topic view */}
+            {viewMode === "by-topic" && (
+              <div className="mt-4 space-y-4">
+                {topicCorpus.map((topicGroup) => (
+                  <div key={topicGroup.topicId} className="card">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`tag-${topicGroup.topicCategory}`}>
+                        {catLabel(topicGroup.topicCategory, locale)}
+                      </span>
+                      <h2 className="text-base font-semibold text-gray-100">{topicGroup.topicTitle}</h2>
+                      <span className="text-xs text-gray-500">
+                        {topicGroup.items.length} {locale === "zh" ? "条故事答案" : "story answers"}
+                      </span>
+                    </div>
+
+                    <details className="mt-3">
+                      <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
+                        {ts("corpusCueCard", locale)}
+                      </summary>
+                      <p className="mt-2 whitespace-pre-line text-xs leading-6 text-gray-500">
+                        {topicGroup.cueCard}
+                      </p>
+                    </details>
+
+                    <div className="mt-4 space-y-4">
+                      {topicGroup.items.map((item) => {
+                        const isCopied = copiedId === item.id;
+                        const wordCount = item.adaptedContent.split(/\s+/).length;
+                        return (
+                          <div key={item.id} className="rounded-xl border border-dark-border bg-dark-surface p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className={`tag-${item.storyCategory}`}>
+                                  {catLabel(item.storyCategory, locale)}
+                                </span>
+                                <span className="text-sm font-medium text-gray-200">{item.storyTitle}</span>
+                                <span className="text-xs text-gray-500">
+                                  {wordCount} {ts("words", locale)} · {formatDate(item.createdAt)}
+                                </span>
+                              </div>
+                              <div className="flex gap-1">
+                                <SpeakButton text={item.adaptedContent} />
+                                <button
+                                  onClick={() => handleCopy(item.id, item.adaptedContent)}
+                                  className="btn-ghost !px-2 !py-1 text-xs"
+                                  aria-label={ts("copy", locale)}
+                                >
+                                  {isCopied ? (
+                                    <Check size={12} className="text-neon-green" />
+                                  ) : (
+                                    <Copy size={12} />
+                                  )}
+                                </button>
+                                <button
+                                  onClick={() => setDeleteTarget({ id: item.id, title: topicGroup.topicTitle })}
+                                  className="rounded p-1 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                                  aria-label={ts("delete", locale)}
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            </div>
+
+                            <EditableContent
+                              content={item.adaptedContent}
+                              onSave={(newContent) => {
+                                updateAdaptedContent(item.id, newContent);
+                                loadData();
+                              }}
+                              className="mt-3"
+                            />
+
+                            {item.tips && (
+                              <details className="mt-3">
+                                <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
+                                  {ts("corpusSpeakingTips", locale)}
+                                </summary>
+                                <p className="mt-2 whitespace-pre-line text-xs leading-6 text-gray-400">
+                                  {item.tips}
+                                </p>
+                              </details>
+                            )}
+
+                            <div className="mt-4">
+                              <Link
+                                href={`/adapt?topic=${topicGroup.topicId}&story=${item.storyId}`}
+                                className="btn-neon text-xs"
+                              >
+                                {ts("adaptRegenerate", locale)}
+                              </Link>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </>

@@ -1,4 +1,5 @@
 import { CoreStory, AdaptedStory } from "./types";
+import { toAdaptedResult } from "./adapted-result";
 
 const STORIES_KEY = "ielts_core_stories";
 const ADAPTED_KEY = "ielts_adapted_stories";
@@ -8,6 +9,19 @@ const CURRENT_VERSION = 1;
 
 function generateId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}-${Math.random().toString(36).slice(2, 5)}`;
+}
+
+function normalizeAdaptedStory(adapted: AdaptedStory): AdaptedStory {
+  const normalized = toAdaptedResult({
+    adapted_content: adapted.adapted_content,
+    tips: adapted.tips,
+  });
+
+  return {
+    ...adapted,
+    adapted_content: normalized.adapted_content,
+    tips: normalized.tips,
+  };
 }
 
 // Data version migration
@@ -64,7 +78,30 @@ export function deleteStory(id: string): number {
 export function getAdaptedStories(): AdaptedStory[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(ADAPTED_KEY) || "[]");
+    const parsed = JSON.parse(localStorage.getItem(ADAPTED_KEY) || "[]");
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    let changed = false;
+    const normalized = parsed
+      .filter((item): item is AdaptedStory => !!item && typeof item === "object")
+      .map((item) => {
+        const repaired = normalizeAdaptedStory(item as AdaptedStory);
+        if (
+          repaired.adapted_content !== item.adapted_content ||
+          repaired.tips !== item.tips
+        ) {
+          changed = true;
+        }
+        return repaired;
+      });
+
+    if (changed) {
+      localStorage.setItem(ADAPTED_KEY, JSON.stringify(normalized));
+    }
+
+    return normalized;
   } catch {
     return [];
   }
@@ -77,8 +114,14 @@ export function getAdaptedStory(storyId: string, topicId: string): AdaptedStory 
 export function saveAdaptedStory(adapted: Omit<AdaptedStory, "id" | "created_at">): AdaptedStory {
   const all = getAdaptedStories();
   const existing = all.findIndex((a) => a.story_id === adapted.story_id && a.topic_id === adapted.topic_id);
+  const normalized = toAdaptedResult({
+    adapted_content: adapted.adapted_content,
+    tips: adapted.tips,
+  });
   const newAdapted: AdaptedStory = {
     ...adapted,
+    adapted_content: normalized.adapted_content,
+    tips: normalized.tips,
     id: generateId(),
     created_at: new Date().toISOString(),
   };
@@ -159,7 +202,7 @@ export function exportAllData(): ExportData {
 
 export function importAllData(data: ExportData): { stories: number; adapted: number } {
   const stories = data.stories || [];
-  const adapted = data.adapted_stories || [];
+  const adapted = (data.adapted_stories || []).map((item) => normalizeAdaptedStory(item));
   localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
   localStorage.setItem(ADAPTED_KEY, JSON.stringify(adapted));
   localStorage.setItem(DATA_VERSION_KEY, String(CURRENT_VERSION));

@@ -25,7 +25,9 @@ import {
   clearBatchState,
 } from "@/lib/store";
 import { hasUserApiKey, getUserApiKey, getUserProvider } from "@/lib/ai";
+import { TopicSuggestionPanel } from "@/components/TopicSuggestionPanel";
 import { ApiKeySetup, ApiKeyBadge } from "@/components/ApiKeySetup";
+import { AdaptWorkspaceTabs } from "@/components/AdaptWorkspaceTabs";
 import Link from "next/link";
 import { useLang } from "@/lib/LangContext";
 import { ts, t, catLabel } from "@/lib/i18n";
@@ -270,6 +272,7 @@ export default function BatchPage() {
 
   return (
     <div className="page-container">
+      <AdaptWorkspaceTabs />
       <h1 className="text-2xl font-bold text-gray-100">{ts("batchTitle", locale)}</h1>
       <p className="mt-2 text-sm text-gray-500">
         {ts("batchDesc", locale)}
@@ -332,6 +335,12 @@ export default function BatchPage() {
       {/* Step 2: Choose topics */}
       {selectedStory && (
         <div className="mt-6">
+          <TopicSuggestionPanel
+            story={story}
+            selectedTopicIds={selectedTopics}
+            onToggleTopic={toggleTopic}
+            disabled={running}
+          />
           <p className="mb-3 text-xs font-medium text-gray-400">
             {(t("batchStep2Selected", locale) as (n: number) => string)(selectedTopics.size)}
           </p>

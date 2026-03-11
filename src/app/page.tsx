@@ -29,11 +29,11 @@ export default function Home() {
           {ts("homeDesc", locale)}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Link href="/stories" className="btn-neon-solid">
+          <Link href="/adapt" className="btn-neon-solid">
             <Sparkles size={16} />
             {ts("homeGetStarted", locale)}
           </Link>
-          <Link href="/topics" className="btn-ghost">
+          <Link href="/corpus" className="btn-ghost">
             {ts("homeBrowseTopics", locale)}
           </Link>
         </div>

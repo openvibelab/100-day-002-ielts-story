@@ -25,6 +25,14 @@ export interface AdaptedStory {
   created_at: string;
 }
 
+export interface SuggestedTopic {
+  id: string;
+  title: string;
+  category: StoryCategory;
+  cue_card: string;
+  reason: string;
+}
+
 export const CATEGORY_LABELS: Record<StoryCategory, string> = {
   person: "Person",
   event: "Event",

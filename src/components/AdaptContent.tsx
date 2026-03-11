@@ -7,8 +7,10 @@ import { CoreStory, CATEGORY_COLORS } from "@/lib/types";
 import { IELTS_TOPICS } from "@/data/topics";
 import { getStories, getAdaptedStory, saveAdaptedStory, getAdaptedStories, getAdaptedCountByStory, updateAdaptedContent } from "@/lib/store";
 import { hasUserApiKey, getUserApiKey, getUserProvider } from "@/lib/ai";
+import { toAdaptedResult } from "@/lib/adapted-result";
 import { ApiKeySetup, ApiKeyBadge } from "@/components/ApiKeySetup";
 import { TopicCombobox } from "@/components/TopicCombobox";
+import { TopicSuggestionPanel } from "@/components/TopicSuggestionPanel";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { SpeakButton } from "@/components/SpeakButton";
 import { EditableContent } from "@/components/EditableContent";
@@ -42,7 +44,7 @@ export function AdaptContent() {
     if (selectedStory && selectedTopic) {
       const existing = getAdaptedStory(selectedStory, selectedTopic);
       if (existing) {
-        setResult({ adapted_content: existing.adapted_content, tips: existing.tips });
+        setResult(toAdaptedResult(existing));
       } else {
         setResult(null);
       }
@@ -93,7 +95,7 @@ export function AdaptContent() {
         throw new Error(data.error || "Failed to generate");
       }
 
-      const data = await res.json();
+      const data = toAdaptedResult(await res.json());
       setResult(data);
 
       saveAdaptedStory({
@@ -180,6 +182,12 @@ export function AdaptContent() {
             value={selectedTopic}
             onChange={setSelectedTopic}
             adaptedTopicIds={adaptedTopicIds}
+          />
+          <TopicSuggestionPanel
+            story={story}
+            selectedTopicIds={new Set(selectedTopic ? [selectedTopic] : [])}
+            onToggleTopic={(topicId) => setSelectedTopic(topicId === selectedTopic ? "" : topicId)}
+            disabled={loading}
           />
 
           {topic && (
