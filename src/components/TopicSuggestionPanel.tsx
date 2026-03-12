@@ -96,7 +96,7 @@ export function TopicSuggestionPanel({
     <div className="card mt-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-gray-200">{labels.title}</h3>
+          <h3 className="text-sm font-semibold text-warm-text">{labels.title}</h3>
           <p className="mt-1 text-xs leading-6 text-gray-500">
             {story ? labels.desc : labels.noStory}
           </p>
@@ -117,7 +117,7 @@ export function TopicSuggestionPanel({
             type="button"
             onClick={handleSuggest}
             disabled={!story || disabled || loading}
-            className="btn-neon text-xs"
+            className="btn-accent text-xs"
           >
             {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
             {loading ? labels.buttonLoading : labels.button}
@@ -139,7 +139,7 @@ export function TopicSuggestionPanel({
                 disabled={disabled}
                 className={`rounded-xl border p-3 text-left transition-all ${
                   isSelected
-                    ? "border-neon-blue bg-neon-blue/10"
+                    ? "border-amber-400 bg-amber-500/10"
                     : "border-dark-border bg-dark-card hover:border-gray-600"
                 }`}
               >
@@ -147,10 +147,10 @@ export function TopicSuggestionPanel({
                   <span className={`tag-${suggestion.category}`}>
                     {catLabel(suggestion.category, locale)}
                   </span>
-                  <span className="text-sm font-medium text-gray-200">{suggestion.title}</span>
+                  <span className="text-sm font-medium text-warm-text">{suggestion.title}</span>
                 </div>
                 <p className="mt-2 text-xs leading-6 text-gray-500">{suggestion.reason}</p>
-                <p className="mt-3 text-[11px] font-medium text-neon-blue">
+                <p className="mt-3 text-[11px] font-medium text-amber-400">
                   {isSelected ? labels.selected : labels.add}
                 </p>
               </button>

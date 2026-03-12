@@ -97,7 +97,7 @@ export default function StoriesPage() {
             {ts("storiesDesc", locale)}
           </p>
         </div>
-        <button className="btn-neon" onClick={() => { resetForm(); setShowForm(true); }}>
+        <button className="btn-accent" onClick={() => { resetForm(); setShowForm(true); }}>
           <Plus size={16} />
           {ts("storiesAdd", locale)}
         </button>
@@ -105,12 +105,12 @@ export default function StoriesPage() {
 
       {showForm && (
         <div className="card mt-6">
-          <h3 className="text-sm font-semibold text-gray-200">
+          <h3 className="text-sm font-semibold text-warm-text">
             {editingId ? ts("storiesEditStory", locale) : ts("storiesNewStory", locale)}
           </h3>
 
           <div className="mt-4">
-            <label htmlFor="story-title" className="mb-1.5 block text-xs font-medium text-gray-400">
+            <label htmlFor="story-title" className="mb-1.5 block text-xs font-medium text-warm-secondary">
               {ts("storiesTitleLabel", locale)}
             </label>
             <input
@@ -124,7 +124,7 @@ export default function StoriesPage() {
           </div>
 
           <div className="mt-4">
-            <label className="mb-1.5 block text-xs font-medium text-gray-400">{ts("storiesCategory", locale)}</label>
+            <label className="mb-1.5 block text-xs font-medium text-warm-secondary">{ts("storiesCategory", locale)}</label>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => (
                 <button
@@ -132,7 +132,7 @@ export default function StoriesPage() {
                   onClick={() => setCategory(cat)}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
                     category === cat
-                      ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
+                      ? "border-amber-400 bg-amber-500/10 text-amber-400"
                       : "border-dark-border text-gray-500 hover:border-gray-500 hover:text-gray-300"
                   }`}
                 >
@@ -143,10 +143,10 @@ export default function StoriesPage() {
           </div>
 
           <div className="mt-4">
-            <label htmlFor="story-content" className="mb-1.5 block text-xs font-medium text-gray-400">
+            <label htmlFor="story-content" className="mb-1.5 block text-xs font-medium text-warm-secondary">
               {ts("storiesYourStory", locale)}
             </label>
-            <p className="mb-2 text-xs text-gray-600">
+            <p className="mb-2 text-xs text-warm-muted">
               {ts("storiesHint", locale)}
             </p>
             <textarea
@@ -161,14 +161,14 @@ export default function StoriesPage() {
               {isShort ? (
                 <span className="text-amber-400">{(t("storiesTooShort", locale) as (n: number) => string)(wordCount)}</span>
               ) : (
-                <span className="text-gray-600">{wordCount} {ts("words", locale)}</span>
+                <span className="text-warm-muted">{wordCount} {ts("words", locale)}</span>
               )}
-              <span className="text-gray-600">{content.length}/3000</span>
+              <span className="text-warm-muted">{content.length}/3000</span>
             </div>
           </div>
 
           <div className="mt-4 flex gap-3">
-            <button className="btn-neon-solid" onClick={handleSave} disabled={!title.trim() || !content.trim()}>
+            <button className="btn-accent-solid" onClick={handleSave} disabled={!title.trim() || !content.trim()}>
               <Save size={14} />
               {editingId ? ts("storiesUpdate", locale) : ts("storiesSaveStory", locale)}
             </button>
@@ -186,7 +186,7 @@ export default function StoriesPage() {
           <p className="mt-2 text-sm text-gray-500">
             {ts("storiesNoStoriesDesc", locale)}
           </p>
-          <button className="btn-neon mt-6" onClick={() => setShowForm(true)}>
+          <button className="btn-accent mt-6" onClick={() => setShowForm(true)}>
             <Plus size={16} />
             {ts("storiesWriteFirst", locale)}
           </button>
@@ -205,8 +205,8 @@ export default function StoriesPage() {
                         <span className="text-xs text-gray-500">{adaptedCount} {ts("storiesAdapted", locale)}</span>
                       )}
                     </div>
-                    <h3 className="mt-2 text-base font-semibold text-gray-200">{story.title}</h3>
-                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-400">{story.content}</p>
+                    <h3 className="mt-2 text-base font-semibold text-warm-text">{story.title}</h3>
+                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-warm-secondary">{story.content}</p>
                   </div>
                   <div className="flex shrink-0 gap-1">
                     <button

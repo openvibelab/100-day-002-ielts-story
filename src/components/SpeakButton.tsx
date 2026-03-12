@@ -68,8 +68,8 @@ export function SpeakButton({ text, className = "", size = "sm" }: SpeakButtonPr
       onClick={handleSpeak}
       className={`inline-flex items-center gap-1.5 rounded-lg border transition-all ${
         speaking
-          ? "border-neon-blue/50 bg-neon-blue/10 text-neon-blue"
-          : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+          ? "border-amber-400/50 bg-amber-500/10 text-amber-400"
+          : "border-dark-border text-warm-secondary hover:border-gray-500 hover:text-warm-text"
       } ${size === "sm" ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-xs"} ${className}`}
       aria-label={speaking ? ts("speakStop", locale) : ts("speakListen", locale)}
       title={speaking ? ts("speakStop", locale) : ts("speakListen", locale)}

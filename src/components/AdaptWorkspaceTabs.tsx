@@ -26,8 +26,8 @@ export function AdaptWorkspaceTabs() {
             href={tab.href}
             className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
               active
-                ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
-                : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                ? "border-amber-400 bg-amber-500/10 text-amber-400"
+                : "border-dark-border text-warm-secondary hover:border-gray-500 hover:text-warm-text"
             }`}
           >
             {tab.label[locale]}

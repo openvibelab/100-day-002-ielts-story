@@ -62,7 +62,7 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
   return (
     <div className="card mt-4">
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-200">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-warm-text">
           <KeyRound size={14} />
           {ts("apiKeyTitle", locale)}
         </h3>
@@ -77,7 +77,7 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
       </p>
 
       <div className="mt-4">
-        <p className="mb-2 text-xs font-medium text-gray-400">{ts("apiKeyProvider", locale)}</p>
+        <p className="mb-2 text-xs font-medium text-warm-secondary">{ts("apiKeyProvider", locale)}</p>
         <div className="flex gap-2">
           {(Object.keys(PROVIDER_LABELS) as AIProvider[]).map((p) => (
             <button
@@ -85,8 +85,8 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
               onClick={() => setApiProvider(p)}
               className={`rounded-lg border px-4 py-2 text-xs font-medium transition-all ${
                 apiProvider === p
-                  ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
-                  : "border-dark-border bg-dark-card text-gray-400 hover:border-gray-500"
+                  ? "border-amber-400 bg-amber-500/10 text-amber-400"
+                  : "border-dark-border bg-dark-card text-warm-secondary hover:border-gray-500"
               }`}
             >
               {PROVIDER_LABELS[p]}
@@ -96,7 +96,7 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
       </div>
 
       <div className="mt-4">
-        <label htmlFor="api-key-input" className="mb-2 block text-xs font-medium text-gray-400">
+        <label htmlFor="api-key-input" className="mb-2 block text-xs font-medium text-warm-secondary">
           {ts("apiKeyLabel", locale)}
         </label>
         <input
@@ -111,7 +111,7 @@ export function ApiKeySetup({ show, onConfigChange }: ApiKeySetupProps) {
 
       <div className="mt-4 flex items-center gap-3">
         <button
-          className="btn-neon text-xs"
+          className="btn-accent text-xs"
           onClick={handleSave}
           disabled={!apiKeyInput.trim()}
         >

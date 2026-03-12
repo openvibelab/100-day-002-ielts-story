@@ -39,7 +39,7 @@ export function ProgressSummary() {
               <p className="text-xs text-gray-500">{ts("progressAdaptations", locale)}</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-neon-blue">{stats.topicsCovered}</p>
+              <p className="text-2xl font-bold text-amber-400">{stats.topicsCovered}</p>
               <p className="text-xs text-gray-500">/ {IELTS_TOPICS.length} {ts("progressTopics", locale)}</p>
             </div>
           </div>
@@ -52,10 +52,10 @@ export function ProgressSummary() {
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-dark-surface">
           <div
-            className="h-full rounded-full bg-neon-blue transition-all duration-700"
+            className="h-full rounded-full bg-amber-500 transition-all duration-700"
             style={{
               width: `${coveragePercent}%`,
-              boxShadow: "0 0 10px rgba(0, 212, 255, 0.5)",
+              boxShadow: "0 0 10px rgba(232, 164, 74, 0.5)",
             }}
           />
         </div>

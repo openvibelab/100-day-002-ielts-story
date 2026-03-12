@@ -44,7 +44,7 @@ export function EditableContent({ content, onSave, className = "" }: EditableCon
           autoFocus
         />
         <div className="mt-2 flex gap-2">
-          <button onClick={handleSave} className="btn-neon text-xs" disabled={!draft.trim()}>
+          <button onClick={handleSave} className="btn-accent text-xs" disabled={!draft.trim()}>
             <Save size={12} />
             {ts("save", locale)}
           </button>
@@ -64,7 +64,7 @@ export function EditableContent({ content, onSave, className = "" }: EditableCon
       </p>
       <button
         onClick={handleEdit}
-        className="absolute -right-1 -top-1 rounded-lg p-1.5 text-gray-600 opacity-0 transition-all hover:bg-dark-surface hover:text-gray-300 group-hover:opacity-100"
+        className="absolute -right-1 -top-1 rounded-lg p-1.5 text-warm-muted opacity-0 transition-all hover:bg-dark-surface hover:text-gray-300 group-hover:opacity-100"
         aria-label={ts("edit", locale)}
         title={ts("edit", locale)}
       >

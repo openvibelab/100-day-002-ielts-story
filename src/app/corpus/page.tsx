@@ -367,7 +367,7 @@ export default function CorpusPage() {
               <Download size={14} />
               {ts("corpusDownload", locale)}
             </button>
-            <button onClick={handlePrint} className="btn-neon text-xs" aria-label="Print">
+            <button onClick={handlePrint} className="btn-accent text-xs" aria-label="Print">
               <Printer size={14} />
               {ts("corpusPrint", locale)}
             </button>
@@ -375,7 +375,7 @@ export default function CorpusPage() {
         </div>
 
         {importResult && (
-          <div className="mt-3 rounded-lg border border-neon-blue/30 bg-neon-blue/5 px-4 py-2 text-xs text-neon-blue">
+          <div className="mt-3 rounded-lg border border-amber-400/30 bg-amber-500/5 px-4 py-2 text-xs text-amber-400">
             {importResult}
           </div>
         )}
@@ -387,8 +387,8 @@ export default function CorpusPage() {
               {ts("corpusNoAdaptationsDesc", locale)}
             </p>
             <div className="mt-6 flex justify-center gap-3">
-              <Link href="/adapt" className="btn-neon text-xs">{ts("corpusSingleAdapt", locale)}</Link>
-              <Link href="/batch" className="btn-neon text-xs">{ts("corpusBatchAdapt", locale)}</Link>
+              <Link href="/adapt" className="btn-accent text-xs">{ts("corpusSingleAdapt", locale)}</Link>
+              <Link href="/batch" className="btn-accent text-xs">{ts("corpusBatchAdapt", locale)}</Link>
             </div>
           </div>
         ) : (
@@ -398,7 +398,7 @@ export default function CorpusPage() {
                 onClick={() => setViewMode("by-story")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   viewMode === "by-story"
-                    ? "bg-neon-blue/10 text-neon-blue"
+                    ? "bg-amber-500/10 text-amber-400"
                     : "text-gray-500 hover:text-gray-300"
                 }`}
               >
@@ -409,7 +409,7 @@ export default function CorpusPage() {
                 onClick={() => setViewMode("timeline")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   viewMode === "timeline"
-                    ? "bg-neon-blue/10 text-neon-blue"
+                    ? "bg-amber-500/10 text-amber-400"
                     : "text-gray-500 hover:text-gray-300"
                 }`}
               >
@@ -420,7 +420,7 @@ export default function CorpusPage() {
                 onClick={() => setViewMode("by-topic")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   viewMode === "by-topic"
-                    ? "bg-neon-blue/10 text-neon-blue"
+                    ? "bg-amber-500/10 text-amber-400"
                     : "text-gray-500 hover:text-gray-300"
                 }`}
               >
@@ -434,8 +434,8 @@ export default function CorpusPage() {
                   onClick={() => setSelectedStoryId("all")}
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     selectedStoryId === "all"
-                      ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
-                      : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                      ? "border-amber-400 bg-amber-500/10 text-amber-400"
+                      : "border-dark-border text-warm-secondary hover:border-gray-500 hover:text-warm-text"
                   }`}
                 >
                   {locale === "zh" ? "全部故事" : "All stories"}
@@ -446,8 +446,8 @@ export default function CorpusPage() {
                     onClick={() => setSelectedStoryId(item.story.id)}
                     className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                       selectedStoryId === item.story.id
-                        ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
-                        : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                        ? "border-amber-400 bg-amber-500/10 text-amber-400"
+                        : "border-dark-border text-warm-secondary hover:border-gray-500 hover:text-warm-text"
                     }`}
                   >
                     {item.story.title}
@@ -471,7 +471,7 @@ export default function CorpusPage() {
                           <span className={`tag-${s.story.category}`}>
                             {catLabel(s.story.category, locale)}
                           </span>
-                          <h2 className="text-base font-semibold text-gray-200">
+                          <h2 className="text-base font-semibold text-warm-text">
                             {s.story.title}
                           </h2>
                           <span className="text-xs text-gray-500">
@@ -489,7 +489,7 @@ export default function CorpusPage() {
                         <div className="mt-4 space-y-4">
                           <div className="rounded-lg border border-dark-border bg-dark-surface p-4">
                             <p className="text-xs font-medium text-gray-500">{ts("corpusOriginalStory", locale)}</p>
-                            <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-400">
+                            <p className="mt-2 whitespace-pre-line text-sm leading-7 text-warm-secondary">
                               {s.story.content}
                             </p>
                           </div>
@@ -504,7 +504,7 @@ export default function CorpusPage() {
                                     <span className={`tag-${a.topicCategory}`}>
                                       {catLabel(a.topicCategory, locale)}
                                     </span>
-                                    <span className="text-sm font-medium text-gray-200">{a.topicTitle}</span>
+                                    <span className="text-sm font-medium text-warm-text">{a.topicTitle}</span>
                                   </div>
                                   <div className="flex gap-1">
                                     <SpeakButton text={a.adaptedContent} />
@@ -513,7 +513,7 @@ export default function CorpusPage() {
                                       className="btn-ghost !px-2 !py-1 text-xs"
                                       aria-label={ts("copy", locale)}
                                     >
-                                      {isCopied ? <Check size={12} className="text-neon-green" /> : <Copy size={12} />}
+                                      {isCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
                                     </button>
                                     <button
                                       onClick={() => setDeleteTarget({ id: a.id, title: a.topicTitle })}
@@ -525,7 +525,7 @@ export default function CorpusPage() {
                                   </div>
                                 </div>
                                 <details className="mt-2">
-                                  <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
+                                  <summary className="cursor-pointer text-xs text-gray-500 hover:text-warm-secondary">
                                     {ts("corpusCueCard", locale)}
                                   </summary>
                                   <p className="mt-1 whitespace-pre-line text-xs leading-6 text-gray-500">
@@ -542,10 +542,10 @@ export default function CorpusPage() {
                                 />
                                 {a.tips && (
                                   <details className="mt-2">
-                                    <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
+                                    <summary className="cursor-pointer text-xs text-gray-500 hover:text-warm-secondary">
                                       {ts("corpusSpeakingTips", locale)}
                                     </summary>
-                                    <p className="mt-1 whitespace-pre-line text-xs leading-6 text-gray-400">
+                                    <p className="mt-1 whitespace-pre-line text-xs leading-6 text-warm-secondary">
                                       {a.tips}
                                     </p>
                                   </details>
@@ -580,7 +580,7 @@ export default function CorpusPage() {
                             <span className={CATEGORY_COLORS[r.topicCategory]}>
                               {catLabel(r.topicCategory, locale)}
                             </span>
-                            <span className="text-sm font-medium text-gray-200">
+                            <span className="text-sm font-medium text-warm-text">
                               {r.topicTitle}
                             </span>
                           </div>
@@ -604,7 +604,7 @@ export default function CorpusPage() {
                       {isExpanded && (
                         <div className="mt-4 border-t border-dark-border pt-4">
                           <div className="flex items-center justify-between gap-3">
-                            <h4 className="text-xs font-medium text-gray-400">{ts("adaptResult", locale)}</h4>
+                            <h4 className="text-xs font-medium text-warm-secondary">{ts("adaptResult", locale)}</h4>
                             <div className="flex gap-1">
                               <SpeakButton text={r.adapted.adapted_content} />
                               <button
@@ -613,7 +613,7 @@ export default function CorpusPage() {
                                 aria-label={ts("copy", locale)}
                               >
                                 {isCopied ? (
-                                  <Check size={14} className="text-neon-green" />
+                                  <Check size={14} className="text-emerald-400" />
                                 ) : (
                                   <Copy size={14} />
                                 )}
@@ -639,8 +639,8 @@ export default function CorpusPage() {
 
                           {r.adapted.tips && (
                             <div className="mt-4 border-t border-dark-border pt-4">
-                              <h4 className="text-xs font-medium text-gray-400">{ts("corpusSpeakingTips", locale)}</h4>
-                              <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-400">
+                              <h4 className="text-xs font-medium text-warm-secondary">{ts("corpusSpeakingTips", locale)}</h4>
+                              <p className="mt-2 whitespace-pre-line text-sm leading-7 text-warm-secondary">
                                 {r.adapted.tips}
                               </p>
                             </div>
@@ -649,7 +649,7 @@ export default function CorpusPage() {
                           <div className="mt-4">
                             <Link
                               href={`/adapt?topic=${r.adapted.topic_id}`}
-                              className="btn-neon text-xs"
+                              className="btn-accent text-xs"
                             >
                               {ts("adaptRegenerate", locale)}
                             </Link>
@@ -678,7 +678,7 @@ export default function CorpusPage() {
                     </div>
 
                     <details className="mt-3">
-                      <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
+                      <summary className="cursor-pointer text-xs text-gray-500 hover:text-warm-secondary">
                         {ts("corpusCueCard", locale)}
                       </summary>
                       <p className="mt-2 whitespace-pre-line text-xs leading-6 text-gray-500">
@@ -697,7 +697,7 @@ export default function CorpusPage() {
                                 <span className={`tag-${item.storyCategory}`}>
                                   {catLabel(item.storyCategory, locale)}
                                 </span>
-                                <span className="text-sm font-medium text-gray-200">{item.storyTitle}</span>
+                                <span className="text-sm font-medium text-warm-text">{item.storyTitle}</span>
                                 <span className="text-xs text-gray-500">
                                   {wordCount} {ts("words", locale)} · {formatDate(item.createdAt)}
                                 </span>
@@ -710,7 +710,7 @@ export default function CorpusPage() {
                                   aria-label={ts("copy", locale)}
                                 >
                                   {isCopied ? (
-                                    <Check size={12} className="text-neon-green" />
+                                    <Check size={12} className="text-emerald-400" />
                                   ) : (
                                     <Copy size={12} />
                                   )}
@@ -736,10 +736,10 @@ export default function CorpusPage() {
 
                             {item.tips && (
                               <details className="mt-3">
-                                <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-400">
+                                <summary className="cursor-pointer text-xs text-gray-500 hover:text-warm-secondary">
                                   {ts("corpusSpeakingTips", locale)}
                                 </summary>
-                                <p className="mt-2 whitespace-pre-line text-xs leading-6 text-gray-400">
+                                <p className="mt-2 whitespace-pre-line text-xs leading-6 text-warm-secondary">
                                   {item.tips}
                                 </p>
                               </details>
@@ -748,7 +748,7 @@ export default function CorpusPage() {
                             <div className="mt-4">
                               <Link
                                 href={`/adapt?topic=${topicGroup.topicId}&story=${item.storyId}`}
-                                className="btn-neon text-xs"
+                                className="btn-accent text-xs"
                               >
                                 {ts("adaptRegenerate", locale)}
                               </Link>

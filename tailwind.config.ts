@@ -9,16 +9,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        neon: {
-          blue: "#00d4ff",
-          green: "#39ff14",
-          purple: "#bf5af2",
+        accent: {
+          gold: "#e8a44a",
+          "gold-hover": "#d4922e",
+          "gold-subtle": "rgba(232, 164, 74, 0.12)",
+        },
+        success: {
+          sage: "#6bab6e",
         },
         dark: {
-          bg: "#0a0a0f",
-          surface: "#12121a",
-          card: "#1a1a2e",
-          border: "#2a2a3e",
+          bg: "#1c1915",
+          surface: "#262220",
+          card: "#302b27",
+          border: "#443d36",
+        },
+        warm: {
+          text: "#ede8e0",
+          secondary: "#a09585",
+          muted: "#7a6f5f",
         },
       },
     },

@@ -33,14 +33,14 @@ export function ConfirmDialog({
         <div className="flex items-start gap-3">
           <div
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-              danger ? "bg-red-500/10" : "bg-neon-blue/10"
+              danger ? "bg-red-500/10" : "bg-amber-500/10"
             }`}
           >
-            <AlertTriangle size={18} className={danger ? "text-red-400" : "text-neon-blue"} />
+            <AlertTriangle size={18} className={danger ? "text-red-400" : "text-amber-400"} />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-200">{title}</h3>
-            <p className="mt-1 text-sm leading-relaxed text-gray-400">{message}</p>
+            <h3 className="text-sm font-semibold text-warm-text">{title}</h3>
+            <p className="mt-1 text-sm leading-relaxed text-warm-secondary">{message}</p>
           </div>
         </div>
         <div className="mt-5 flex justify-end gap-2">
@@ -52,7 +52,7 @@ export function ConfirmDialog({
             className={`inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-xs font-semibold transition-all ${
               danger
                 ? "bg-red-500 text-white hover:bg-red-600"
-                : "bg-neon-blue text-black hover:shadow-[0_0_15px_rgba(0,212,255,0.4)]"
+                : "bg-amber-500 text-black hover:shadow-[0_0_15px_rgba(232,164,74,0.4)]"
             }`}
           >
             {confirmLabel || ts("confirm", locale)}

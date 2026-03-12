@@ -44,12 +44,12 @@ function buildStoryGraph(
         ),
       },
       style: {
-        background: "#00d4ff",
+        background: "#e8a44a",
         color: "#03111a",
         border: "none",
         borderRadius: "14px",
         padding: "12px 18px",
-        boxShadow: "0 0 24px rgba(0, 212, 255, 0.35)",
+        boxShadow: "0 0 24px rgba(232, 164, 74, 0.35)",
         maxWidth: "220px",
       },
     },
@@ -81,7 +81,7 @@ function buildStoryGraph(
         storyId: story.id,
       },
       style: {
-        background: "#12121a",
+        background: "#262220",
         color: "#d8def7",
         border: `1px solid ${color}`,
         borderRadius: "10px",
@@ -180,7 +180,7 @@ export default function MindMapView() {
         <div className="card mt-6 py-16 text-center">
           <p className="text-lg font-semibold text-gray-300">{ts("mindMapEmpty", locale)}</p>
           <p className="mt-2 text-sm text-gray-500">{ts("mindMapEmptyDesc", locale)}</p>
-          <Link href="/stories" className="btn-neon mt-6 text-xs">
+          <Link href="/stories" className="btn-accent mt-6 text-xs">
             {ts("mindMapAddStories", locale)}
           </Link>
         </div>
@@ -206,7 +206,7 @@ export default function MindMapView() {
                 key={story.id}
                 type="button"
                 onClick={() => openStoryMap(story.id)}
-                className="rounded-2xl border border-dark-border bg-dark-card p-5 text-left transition-all hover:border-neon-blue/50 hover:bg-dark-surface"
+                className="rounded-2xl border border-dark-border bg-dark-card p-5 text-left transition-all hover:border-amber-400/50 hover:bg-dark-surface"
               >
                 <div className="flex items-center gap-2">
                   <span className={`tag-${story.category}`}>{catLabel(story.category, locale)}</span>
@@ -216,7 +216,7 @@ export default function MindMapView() {
                 </div>
                 <h2 className="mt-3 text-base font-semibold text-gray-100">{story.title}</h2>
                 <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-500">{story.content}</p>
-                <p className="mt-4 text-xs font-medium text-neon-blue">
+                <p className="mt-4 text-xs font-medium text-amber-400">
                   {locale === "zh" ? "进入这个故事的导图" : "Open this story map"}
                 </p>
               </button>
@@ -234,7 +234,7 @@ export default function MindMapView() {
           <button
             type="button"
             onClick={() => router.push("/mind-map")}
-            className="text-xs text-neon-blue hover:underline"
+            className="text-xs text-amber-400 hover:underline"
           >
             {locale === "zh" ? "返回故事列表" : "Back to story list"}
           </button>
@@ -254,8 +254,8 @@ export default function MindMapView() {
                 onClick={() => openStoryMap(story.id)}
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                   active
-                    ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
-                    : "border-dark-border text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                    ? "border-amber-400 bg-amber-500/10 text-amber-400"
+                    : "border-dark-border text-warm-secondary hover:border-gray-500 hover:text-warm-text"
                 }`}
               >
                 {story.title}
@@ -269,7 +269,7 @@ export default function MindMapView() {
         <p className="text-xs font-medium text-gray-500">
           {locale === "zh" ? "核心故事摘要" : "Core story summary"}
         </p>
-        <p className="mt-2 whitespace-pre-line text-sm leading-7 text-gray-400">
+        <p className="mt-2 whitespace-pre-line text-sm leading-7 text-warm-secondary">
           {selectedStory.content}
         </p>
       </div>
@@ -284,7 +284,7 @@ export default function MindMapView() {
               ? "先去改编工作台生成几条回答，这里就会长出这一个故事自己的题目导图。"
               : "Generate a few adaptations first, then this story will grow its own topic map."}
           </p>
-          <Link href={`/adapt?story=${selectedStory.id}`} className="btn-neon mt-6 text-xs">
+          <Link href={`/adapt?story=${selectedStory.id}`} className="btn-accent mt-6 text-xs">
             {locale === "zh" ? "去生成" : "Generate now"}
           </Link>
         </div>
@@ -294,7 +294,7 @@ export default function MindMapView() {
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-gray-500">
               {locale === "zh" ? "故事导图" : "Story map"}
             </p>
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-warm-secondary">
               {locale === "zh"
                 ? "点击题目节点可直接回到改编工作台查看或重做。"
                 : "Click a topic node to jump back into the adaptation workspace."}
@@ -315,7 +315,7 @@ export default function MindMapView() {
             nodesConnectable={false}
             elementsSelectable={false}
           >
-            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#1a1a2e" />
+            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#302b27" />
             <Controls showInteractive={false} position="bottom-right" />
           </ReactFlow>
         </div>

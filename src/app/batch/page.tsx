@@ -287,7 +287,7 @@ export default function BatchPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <button onClick={handleResume} className="btn-neon text-xs">
+            <button onClick={handleResume} className="btn-accent text-xs">
               {ts("batchResume", locale)}
             </button>
             <button onClick={handleDismissResume} className="btn-ghost text-xs">
@@ -299,11 +299,11 @@ export default function BatchPage() {
 
       {/* Step 1: Choose story */}
       <div className="mt-6">
-        <p className="mb-3 text-xs font-medium text-gray-400">{ts("batchStep1", locale)}</p>
+        <p className="mb-3 text-xs font-medium text-warm-secondary">{ts("batchStep1", locale)}</p>
         {stories.length === 0 ? (
           <div className="card py-10 text-center">
             <p className="text-sm text-gray-500">{ts("adaptNoStories", locale)}</p>
-            <Link href="/stories" className="btn-neon mt-4 text-xs">
+            <Link href="/stories" className="btn-accent mt-4 text-xs">
               {ts("adaptAddFirst", locale)}
             </Link>
           </div>
@@ -316,7 +316,7 @@ export default function BatchPage() {
                 disabled={running}
                 className={`rounded-xl border p-3 text-left transition-all ${
                   selectedStory === s.id
-                    ? "border-neon-blue bg-neon-blue/5"
+                    ? "border-amber-400 bg-amber-500/5"
                     : "border-dark-border bg-dark-card hover:border-gray-600"
                 }`}
               >
@@ -324,7 +324,7 @@ export default function BatchPage() {
                   <span className={CATEGORY_COLORS[s.category] + " !text-[10px] !px-1.5 !py-0.5"}>
                     {catLabel(s.category, locale)}
                   </span>
-                  <span className="min-w-0 truncate text-sm font-medium text-gray-200">{s.title}</span>
+                  <span className="min-w-0 truncate text-sm font-medium text-warm-text">{s.title}</span>
                 </div>
               </button>
             ))}
@@ -341,7 +341,7 @@ export default function BatchPage() {
             onToggleTopic={toggleTopic}
             disabled={running}
           />
-          <p className="mb-3 text-xs font-medium text-gray-400">
+          <p className="mb-3 text-xs font-medium text-warm-secondary">
             {(t("batchStep2Selected", locale) as (n: number) => string)(selectedTopics.size)}
           </p>
 
@@ -351,7 +351,7 @@ export default function BatchPage() {
               disabled={running}
               className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
                 filterCat === "all"
-                  ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
+                  ? "border-amber-400 bg-amber-500/10 text-amber-400"
                   : "border-dark-border text-gray-500 hover:text-gray-300"
               }`}
             >
@@ -364,7 +364,7 @@ export default function BatchPage() {
                 disabled={running}
                 className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
                   filterCat === cat
-                    ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
+                    ? "border-amber-400 bg-amber-500/10 text-amber-400"
                     : "border-dark-border text-gray-500 hover:text-gray-300"
                 }`}
               >
@@ -372,29 +372,29 @@ export default function BatchPage() {
               </button>
             ))}
             <span className="mx-1 text-gray-700">|</span>
-            <button onClick={selectAll} disabled={running} className="text-xs text-neon-blue hover:underline">
+            <button onClick={selectAll} disabled={running} className="text-xs text-amber-400 hover:underline">
               {ts("batchSelectAll", locale)}
             </button>
             <button onClick={selectNone} disabled={running} className="text-xs text-gray-500 hover:underline">
               {ts("batchClear", locale)}
             </button>
-            <button onClick={selectUnadapted} disabled={running} className="text-xs text-neon-green hover:underline">
+            <button onClick={selectUnadapted} disabled={running} className="text-xs text-emerald-400 hover:underline">
               {ts("batchUntouched", locale)}
             </button>
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-4">
-            <label className="flex cursor-pointer items-center gap-2 text-xs text-gray-400">
+            <label className="flex cursor-pointer items-center gap-2 text-xs text-warm-secondary">
               <input
                 type="checkbox"
                 checked={skipExisting}
                 onChange={(e) => setSkipExisting(e.target.checked)}
                 disabled={running}
-                className="accent-neon-blue"
+                className="accent-amber-500"
               />
               {ts("batchSkipExisting", locale)}
             </label>
-            <label className="flex items-center gap-2 text-xs text-gray-400">
+            <label className="flex items-center gap-2 text-xs text-warm-secondary">
               {ts("batchDelay", locale)}
               <select
                 value={delay}
@@ -423,14 +423,14 @@ export default function BatchPage() {
                     disabled={running}
                     className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs transition-all ${
                       selected
-                        ? "border-neon-blue/50 bg-neon-blue/5"
+                        ? "border-amber-400/50 bg-amber-500/5"
                         : "border-dark-border bg-dark-card hover:border-gray-600"
                     }`}
                   >
                     {selected ? (
-                      <CheckSquare size={14} className="shrink-0 text-neon-blue" />
+                      <CheckSquare size={14} className="shrink-0 text-amber-400" />
                     ) : (
-                      <Square size={14} className="shrink-0 text-gray-600" />
+                      <Square size={14} className="shrink-0 text-warm-muted" />
                     )}
                     <span className="min-w-0 truncate text-gray-300">{tp.title}</span>
                     {hasAdapted && (
@@ -449,7 +449,7 @@ export default function BatchPage() {
         <div className="mt-6 flex flex-wrap items-center gap-3">
           {!running ? (
             <button
-              className="btn-neon-solid"
+              className="btn-accent-solid"
               disabled={selectedTopics.size === 0}
               onClick={handleStart}
             >
@@ -496,13 +496,13 @@ export default function BatchPage() {
             <PartyPopper size={24} className="text-green-400" />
             <div>
               <h3 className="text-sm font-semibold text-green-400">{ts("batchComplete", locale)}</h3>
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-warm-secondary">
                 {doneCount} {ts("batchGenerated", locale)} · {skippedCount} {ts("batchSkipped", locale)} · {errorCount} {ts("batchFailed", locale)}
               </p>
             </div>
           </div>
           <div className="mt-4 flex gap-3">
-            <Link href="/corpus" className="btn-neon text-xs">
+            <Link href="/corpus" className="btn-accent text-xs">
               {ts("batchViewCorpus", locale)}
             </Link>
             <Link href="/mind-map" className="btn-ghost text-xs">
@@ -515,7 +515,7 @@ export default function BatchPage() {
       {/* Progress */}
       {tasks.length > 0 && (
         <div className="mt-6">
-          <div className="flex items-center justify-between text-xs text-gray-400">
+          <div className="flex items-center justify-between text-xs text-warm-secondary">
             <span>
               {progress.done}/{progress.total}
               {doneCount > 0 && <span className="ml-2 text-green-400">{doneCount} {ts("batchDone", locale)}</span>}
@@ -531,8 +531,8 @@ export default function BatchPage() {
                 width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%`,
                 background: errorCount > 0
                   ? "linear-gradient(90deg, #22c55e, #ef4444)"
-                  : "#00d4ff",
-                boxShadow: "0 0 10px rgba(0, 212, 255, 0.5)",
+                  : "#e8a44a",
+                boxShadow: "0 0 10px rgba(232, 164, 74, 0.5)",
               }}
             />
           </div>
@@ -543,7 +543,7 @@ export default function BatchPage() {
                 key={task.topicId}
                 className={`flex items-center gap-3 rounded-lg border px-3 py-2 text-xs ${
                   task.status === "running"
-                    ? "border-neon-blue/30 bg-neon-blue/5"
+                    ? "border-amber-400/30 bg-amber-500/5"
                     : task.status === "done"
                     ? "border-green-500/20 bg-green-500/5"
                     : task.status === "error"
@@ -554,7 +554,7 @@ export default function BatchPage() {
                 }`}
               >
                 {task.status === "running" && (
-                  <Loader2 size={14} className="shrink-0 animate-spin text-neon-blue" />
+                  <Loader2 size={14} className="shrink-0 animate-spin text-amber-400" />
                 )}
                 {task.status === "done" && (
                   <CheckCircle2 size={14} className="shrink-0 text-green-400" />
@@ -563,7 +563,7 @@ export default function BatchPage() {
                   <XCircle size={14} className="shrink-0 text-red-400" />
                 )}
                 {task.status === "skipped" && (
-                  <CheckCircle2 size={14} className="shrink-0 text-gray-600" />
+                  <CheckCircle2 size={14} className="shrink-0 text-warm-muted" />
                 )}
                 {task.status === "pending" && (
                   <div className="h-3.5 w-3.5 shrink-0 rounded-full border border-gray-700" />
@@ -575,7 +575,7 @@ export default function BatchPage() {
                 <span className="min-w-0 truncate text-gray-300">{task.topicTitle}</span>
 
                 {task.status === "skipped" && (
-                  <span className="ml-auto shrink-0 text-gray-600">{ts("batchAlreadyAdapted", locale)}</span>
+                  <span className="ml-auto shrink-0 text-warm-muted">{ts("batchAlreadyAdapted", locale)}</span>
                 )}
                 {task.error && (
                   <span className="ml-auto shrink-0 text-red-400">{task.error}</span>

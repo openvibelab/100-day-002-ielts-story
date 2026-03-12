@@ -54,8 +54,8 @@ export function NavLinks() {
               href={link.href}
               className={`rounded-lg px-3 py-2 text-sm transition-colors ${
                 isActive
-                  ? "bg-neon-blue/10 text-neon-blue"
-                  : "text-gray-400 hover:bg-dark-card hover:text-gray-200"
+                  ? "bg-amber-500/10 text-amber-400"
+                  : "text-warm-secondary hover:bg-dark-card hover:text-warm-text"
               }`}
             >
               {ts(link.labelKey, locale)}
@@ -72,7 +72,7 @@ export function NavLinks() {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-card hover:text-gray-200 md:hidden"
+        className="rounded-lg p-2 text-warm-secondary transition-colors hover:bg-dark-card hover:text-warm-text md:hidden"
         aria-label={menuOpen ? "Close menu" : "Open menu"}
       >
         {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -91,7 +91,7 @@ export function NavLinks() {
                   href={link.href}
                   className={`flex items-center justify-between rounded-lg px-4 py-3 text-base transition-colors ${
                     isActive
-                      ? "bg-neon-blue/10 text-neon-blue"
+                      ? "bg-amber-500/10 text-amber-400"
                       : "text-gray-300 hover:bg-dark-card"
                   }`}
                 >

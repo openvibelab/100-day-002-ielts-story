@@ -65,10 +65,10 @@ export default function TopicsPage() {
       {/* Progress bar */}
       <div className="mt-4 h-2 overflow-hidden rounded-full bg-dark-surface">
         <div
-          className="h-full rounded-full bg-neon-blue transition-all duration-500"
+          className="h-full rounded-full bg-amber-500 transition-all duration-500"
           style={{
             width: `${(totalAdapted / IELTS_TOPICS.length) * 100}%`,
-            boxShadow: "0 0 10px rgba(0, 212, 255, 0.5)",
+            boxShadow: "0 0 10px rgba(232, 164, 74, 0.5)",
           }}
         />
       </div>
@@ -78,7 +78,7 @@ export default function TopicsPage() {
           onClick={() => setFilter("all")}
           className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
             filter === "all"
-              ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
+              ? "border-amber-400 bg-amber-500/10 text-amber-400"
               : "border-dark-border text-gray-500 hover:text-gray-300"
           }`}
         >
@@ -92,7 +92,7 @@ export default function TopicsPage() {
               onClick={() => setFilter(cat)}
               className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
                 filter === cat
-                  ? "border-neon-blue bg-neon-blue/10 text-neon-blue"
+                  ? "border-amber-400 bg-amber-500/10 text-amber-400"
                   : "border-dark-border text-gray-500 hover:text-gray-300"
               }`}
             >
@@ -115,9 +115,9 @@ export default function TopicsPage() {
                 className="flex w-full items-center justify-between gap-3 text-left"
               >
                 <div className="flex min-w-0 items-center gap-2">
-                  {hasAdapted && <CheckCircle2 size={16} className="shrink-0 text-neon-green" />}
+                  {hasAdapted && <CheckCircle2 size={16} className="shrink-0 text-emerald-400" />}
                   <span className={CATEGORY_COLORS[topic.category]}>{catLabel(topic.category, locale)}</span>
-                  <span className="min-w-0 truncate text-sm font-medium text-gray-200">{topic.title}</span>
+                  <span className="min-w-0 truncate text-sm font-medium text-warm-text">{topic.title}</span>
                   {sourceInfo && (
                     <span className={sourceInfo.className}>{sourceInfo.label}</span>
                   )}
@@ -127,7 +127,7 @@ export default function TopicsPage() {
 
               {isExpanded && (
                 <div className="mt-4 border-t border-dark-border pt-4">
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-gray-400">{topic.cue_card}</p>
+                  <p className="whitespace-pre-line text-sm leading-relaxed text-warm-secondary">{topic.cue_card}</p>
 
                   {stories.length > 0 ? (
                     <div className="mt-4">
@@ -137,7 +137,7 @@ export default function TopicsPage() {
                           <Link
                             key={s.id}
                             href={`/adapt?topic=${topic.id}&story=${s.id}`}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-dark-border bg-dark-surface px-3 py-1.5 text-xs text-gray-300 transition-colors hover:border-neon-blue hover:text-neon-blue"
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-dark-border bg-dark-surface px-3 py-1.5 text-xs text-gray-300 transition-colors hover:border-amber-400 hover:text-amber-400"
                           >
                             <Sparkles size={10} />
                             {s.title}
@@ -147,7 +147,7 @@ export default function TopicsPage() {
                     </div>
                   ) : (
                     <div className="mt-4">
-                      <Link href="/stories" className="btn-neon text-xs">
+                      <Link href="/stories" className="btn-accent text-xs">
                         {ts("topicsAddStoryFirst", locale)}
                       </Link>
                     </div>

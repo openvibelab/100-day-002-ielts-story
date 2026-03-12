@@ -137,11 +137,11 @@ export function AdaptContent() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div>
-          <p className="mb-3 text-xs font-medium text-gray-400">{ts("adaptStep1", locale)}</p>
+          <p className="mb-3 text-xs font-medium text-warm-secondary">{ts("adaptStep1", locale)}</p>
           {stories.length === 0 ? (
             <div className="card py-10 text-center">
               <p className="text-sm text-gray-500">{ts("adaptNoStories", locale)}</p>
-              <a href="/stories" className="btn-neon mt-4 text-xs">{ts("adaptAddFirst", locale)}</a>
+              <a href="/stories" className="btn-accent mt-4 text-xs">{ts("adaptAddFirst", locale)}</a>
             </div>
           ) : (
             <div className="space-y-2">
@@ -153,13 +153,13 @@ export function AdaptContent() {
                     onClick={() => setSelectedStory(s.id)}
                     className={`w-full rounded-xl border p-4 text-left transition-all ${
                       selectedStory === s.id
-                        ? "border-neon-blue bg-neon-blue/5"
+                        ? "border-amber-400 bg-amber-500/5"
                         : "border-dark-border bg-dark-card hover:border-gray-600"
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <span className={CATEGORY_COLORS[s.category]}>{catLabel(s.category, locale)}</span>
-                      <span className="text-sm font-medium text-gray-200">{s.title}</span>
+                      <span className="text-sm font-medium text-warm-text">{s.title}</span>
                       {adaptedCount > 0 && (
                         <span className="ml-auto flex items-center gap-1 text-xs text-gray-500">
                           <CheckCircle2 size={12} className="text-green-500/50" />
@@ -176,7 +176,7 @@ export function AdaptContent() {
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-medium text-gray-400">{ts("adaptStep2", locale)}</p>
+          <p className="mb-3 text-xs font-medium text-warm-secondary">{ts("adaptStep2", locale)}</p>
           <TopicCombobox
             topics={IELTS_TOPICS}
             value={selectedTopic}
@@ -193,7 +193,7 @@ export function AdaptContent() {
           {topic && (
             <div className="card mt-4">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-gray-400">{ts("adaptCueCard", locale)}</p>
+                <p className="text-xs font-medium text-warm-secondary">{ts("adaptCueCard", locale)}</p>
                 {selectedStory && getAdaptedStory(selectedStory, selectedTopic) && (
                   <span className="flex items-center gap-1 text-xs text-green-400">
                     <CheckCircle2 size={12} />
@@ -209,7 +209,7 @@ export function AdaptContent() {
 
       <div className="mt-6 flex flex-wrap items-center gap-4">
         <button
-          className="btn-neon-solid"
+          className="btn-accent-solid"
           disabled={!selectedStory || !selectedTopic || loading}
           onClick={handleGenerate}
           title={!selectedStory || !selectedTopic ? ts("adaptSelectHint", locale) : undefined}
@@ -234,11 +234,11 @@ export function AdaptContent() {
         <div className="mt-8 space-y-5">
           <div className="card">
             <div className="flex items-center justify-between gap-3">
-              <h3 className="text-sm font-semibold text-gray-200">{ts("adaptResult", locale)}</h3>
+              <h3 className="text-sm font-semibold text-warm-text">{ts("adaptResult", locale)}</h3>
               <div className="flex gap-1.5">
                 <SpeakButton text={result.adapted_content} />
                 <button onClick={handleCopy} className="btn-ghost !px-2 !py-1 text-xs" aria-label={ts("copy", locale)}>
-                  {copied ? <Check size={12} className="text-neon-green" /> : <Copy size={12} />}
+                  {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
                   {copied ? ts("copied", locale) : ts("copy", locale)}
                 </button>
               </div>
@@ -254,15 +254,15 @@ export function AdaptContent() {
               }}
               className="mt-4"
             />
-            <p className="mt-3 text-xs text-gray-600">
+            <p className="mt-3 text-xs text-warm-muted">
               {result.adapted_content.split(/\s+/).length} {ts("words", locale)}
             </p>
           </div>
 
           {result.tips && (
             <div className="card">
-              <h3 className="text-sm font-semibold text-gray-200">{ts("adaptTips", locale)}</h3>
-              <p className="mt-3 whitespace-pre-line text-sm leading-7 text-gray-400">{result.tips}</p>
+              <h3 className="text-sm font-semibold text-warm-text">{ts("adaptTips", locale)}</h3>
+              <p className="mt-3 whitespace-pre-line text-sm leading-7 text-warm-secondary">{result.tips}</p>
             </div>
           )}
         </div>

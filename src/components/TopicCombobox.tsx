@@ -77,10 +77,10 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
             <span className={CATEGORY_COLORS[selectedTopic.category] + " !text-[10px] !px-1.5 !py-0.5"}>
               {catLabel(selectedTopic.category, locale)}
             </span>
-            <span className="truncate text-sm text-gray-200">{selectedTopic.title}</span>
+            <span className="truncate text-sm text-warm-text">{selectedTopic.title}</span>
           </div>
         ) : (
-          <span className="text-sm text-gray-600">{ts("topicSelect", locale)}</span>
+          <span className="text-sm text-warm-muted">{ts("topicSelect", locale)}</span>
         )}
         <div className="flex shrink-0 items-center gap-1">
           {value && (
@@ -109,7 +109,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={ts("topicSearch", locale)}
-                className="w-full bg-transparent text-sm text-gray-200 outline-none placeholder:text-gray-600"
+                className="w-full bg-transparent text-sm text-warm-text outline-none placeholder:text-warm-muted"
               />
             </div>
           </div>
@@ -119,7 +119,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
             <button
               onClick={() => setFilterCat("all")}
               className={`rounded px-2 py-1 text-[10px] font-medium transition-colors ${
-                filterCat === "all" ? "bg-neon-blue/10 text-neon-blue" : "text-gray-500 hover:text-gray-300"
+                filterCat === "all" ? "bg-amber-500/10 text-amber-400" : "text-gray-500 hover:text-gray-300"
               }`}
             >
               {ts("catAll", locale)}
@@ -129,7 +129,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
                 key={cat}
                 onClick={() => setFilterCat(cat)}
                 className={`rounded px-2 py-1 text-[10px] font-medium transition-colors ${
-                  filterCat === cat ? "bg-neon-blue/10 text-neon-blue" : "text-gray-500 hover:text-gray-300"
+                  filterCat === cat ? "bg-amber-500/10 text-amber-400" : "text-gray-500 hover:text-gray-300"
                 }`}
               >
                 {catLabel(cat, locale)}
@@ -151,7 +151,7 @@ export function TopicCombobox({ topics, value, onChange, adaptedTopicIds }: Topi
                     onClick={() => handleSelect(t.id)}
                     className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
                       isSelected
-                        ? "bg-neon-blue/10 text-neon-blue"
+                        ? "bg-amber-500/10 text-amber-400"
                         : "text-gray-300 hover:bg-dark-surface"
                     }`}
                   >

@@ -21,7 +21,7 @@ Write one personal story, and AI adapts it to fit any IELTS Speaking Part 2 topi
 ## Tech Stack
 
 - **Framework:** Next.js 14 (App Router) + TypeScript
-- **Styling:** Tailwind CSS (cyberpunk dark theme)
+- **Styling:** Tailwind CSS (warm study room theme — Literata serif, gold accents on warm dark background)
 - **Visualization:** React Flow
 - **AI:** Gemini `gemini-2.5-flash` (primary), DeepSeek / OpenAI (fallback)
 - **Data:** 100% localStorage (no backend database)
